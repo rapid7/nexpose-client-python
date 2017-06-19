@@ -1,0 +1,27 @@
+{
+    "asset_ids":[
+        1
+    ],
+    "url":"https://localhost/api/2.0/tags/12",
+    "tag_id":12,
+    "tag_name":"example",
+    "attributes":[
+        {
+            "tag_attribute_value":"Nexpose",
+            "tag_attribute_name":"SOURCE",
+            "tag_attribute_id":61
+        },
+        {
+            "tag_attribute_value":"#de7200",
+            "tag_attribute_name":"COLOR",
+            "tag_attribute_id":63
+        }
+    ],
+    "tag_config":{
+        "asset_group_ids":[2,3],
+        "site_ids":[4,5],
+        "tag_associated_asset_ids":[6,7],
+        "search_criteria":null
+    },
+    "tag_type":"CUSTOM"
+}

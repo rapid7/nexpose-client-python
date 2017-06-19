@@ -1,0 +1,5 @@
+<UserAuthenticatorListingResponse success="1">
+    <AuthenticatorSummary id="1" authSource="Builtin Administrators" authModule="XML" />
+    <AuthenticatorSummary id="2" authSource="Builtin Users" authModule="DataStore" external="0" />
+    <AuthenticatorSummary id="3" authSource="My Users" authModule="LDAP" external="1" />
+</UserAuthenticatorListingResponse>

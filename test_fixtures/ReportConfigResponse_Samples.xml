@@ -1,0 +1,17 @@
+<ReportConfigResponse_Samples>
+	<ReportConfigResponse success="1">
+		<ReportConfig id="1" name="XML 2.0 export" template-id="audit-report" format="raw-xml-v2" owner="1" timezone="America/New_York">
+			<Filters>
+				<filter type="scan" id="7"/>
+				<filter type="vuln-status" id="vulnerable-exploited">vulnerable-exploited</filter>
+				<filter type="vuln-status" id="vulnerable-version">vulnerable-version</filter>
+				<filter type="vuln-status" id="potential">potential</filter>
+			</Filters>
+			<Generate after-scan="0" schedule="0"/>
+			<Users/>
+			<Delivery>
+				<Storage storeOnServer="1"/>
+			</Delivery>
+		</ReportConfig>
+	</ReportConfigResponse>
+</ReportConfigResponse_Samples>

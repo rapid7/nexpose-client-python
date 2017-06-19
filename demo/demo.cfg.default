@@ -1,0 +1,6 @@
+# This file contains the Nexpose login information used by "run_demo.py".
+# Lines started with a #-character are ignored.
+# Copy "demo.cfg.default" to "demo.cfg".
+# Then edit "demo.cfg" as needed, keeping the format intact.
+# The username and/or password should not contain spaces or tabs.
+localhost 3780 nxadmin nxpassword

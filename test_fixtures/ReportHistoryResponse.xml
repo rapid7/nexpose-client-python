@@ -1,0 +1,4 @@
+<ReportHistoryResponse success="1">
+	<ReportSummary id="6" cfg-id="2" status="Generated" generated-on="20160303T161938459" report-URI="/reports/00000002/00000006/report.xml"/>
+	<ReportSummary id="2" cfg-id="2" status="Generated" generated-on="20160303T122452808" report-URI="/reports/00000002/00000002/report.xml"/>
+</ReportHistoryResponse>

@@ -1,0 +1,5 @@
+<ReportListingResponse success="1">
+	<ReportConfigSummary template-id="audit-report" cfg-id="2" status="Generated" name="Report 2.0 - Complete Site" generated-on="20160303T122452808" report-URI="/reports/00000002/00000002/report.xml"/>
+	<ReportConfigSummary template-id="audit-report" cfg-id="3" status="Generated" name="Report 2.0 - Including non-vuln" generated-on="20160303T122922250" report-URI="/reports/00000003/00000003/report.xml"/>
+	<ReportConfigSummary template-id="audit-report" cfg-id="1" status="Generated" name="XML 2.0 export" generated-on="20160219T062407874" report-URI="/reports/00000001/00000001/report.xml" scope="global"/>
+</ReportListingResponse>
