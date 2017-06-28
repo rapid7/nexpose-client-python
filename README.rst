@@ -33,13 +33,13 @@ Contributions
 -------------
 
 We welcome contributions to this package. Please see
-`CONTRIBUTING <.github/CONTRIBUTING.md>`__ for details.
+`CONTRIBUTING <https://github.com/rapid7/nexpose-client-python/blob/master/.github/CONTRIBUTING.md>`__ for details.
 
 License
 -------
 
 The nexpose-client-python library is provided under the 3-Clause BSD
-License. See `LICENSE <./LICENSE>`__ for details.
+License. See `LICENSE <https://github.com/rapid7/nexpose-client-python/blob/master/LICENSE>`__ for details.
 
 Credits
 -------
@@ -47,4 +47,4 @@ Credits
 | Davinsi Labs
 | Rapid7, Inc.
 
-See `contributors <./contributors.md>`__ for more info.
+See `contributors <https://github.com/rapid7/nexpose-client-python/blob/master/contributors.md>`__ for more info.
