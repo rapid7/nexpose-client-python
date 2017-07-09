@@ -118,6 +118,7 @@ class SiteConfiguration(SiteBase):
         self.configversion = 3
         self.configengineid = 3
         self.users = []
+        self.schedules = []
 
     def AsXML(self, exclude_id):
         attributes = {}
