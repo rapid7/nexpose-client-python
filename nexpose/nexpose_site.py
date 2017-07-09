@@ -79,6 +79,7 @@ class SiteConfiguration(SiteBase):
         config.hosts = [_host_to_object(host) for host in get_children_of(xml_data, 'Hosts')]
         config.alerting = [alert for alert in get_children_of(xml_data, 'Alerting')]
         config.credentials = [credential for credential in get_children_of(xml_data, 'Credentials')]
+        config.users = [user for user in get_children_of(xml_data, 'Users')]
 
         #Use scanconfig elements for the SiteConfiguration
         scanconfig = get_element(xml_data, "ScanConfig")
@@ -146,6 +147,11 @@ class SiteConfiguration(SiteBase):
         for alert in self.alerting:
             xml_alerting.append(alert)
         xml_data.append(xml_alerting)
+
+        xml_users = create_element('Users')
+        for user in self.users:
+            xml_users.append(user)
+        xml_data.append(xml_users)
 
         #Include ScanConfig attributes
         attributes = {}
