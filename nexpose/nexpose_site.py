@@ -117,6 +117,7 @@ class SiteConfiguration(SiteBase):
         self.configname = "Full audit without Web Spider"
         self.configversion = 3
         self.configengineid = 3
+        self.users = []
 
     def AsXML(self, exclude_id):
         attributes = {}
