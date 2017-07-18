@@ -1,4 +1,4 @@
-from xml_utils import get_attribute, get_content_of, get_children_of, create_element, as_string, as_xml
+from xml_utils import get_attribute, get_content_of, get_children_of, create_element, as_string, as_xml, get_element
 
 class Range:
 	def __init__(self, start, end):
@@ -70,10 +70,15 @@ class SiteConfiguration(SiteBase):
 		config.description = get_content_of(xml_data, 'Description', config.description)
 		config.is_dynamic = get_attribute(xml_data, 'isDynamic', config.is_dynamic) in ['1', 'true', True]
 		config.hosts = [_host_to_object(host) for host in get_children_of(xml_data, 'Hosts')]
-		# TODO: figure out why I added these prints & deepcopy, then clean it up
-		#print config.hosts
-		#import copy
-		#print as_string(as_xml(copy.deepcopy(as_string(xml_data))))
+
+                #Use scanconfig elements for the SiteConfiguration
+                scanconfig = get_element(xml_data, "ScanConfig")
+                config.configid = scanconfig.get("configID")
+                config.configtemplateid = scanconfig.get("templateID")
+                config.configname = scanconfig.get("name")
+                config.configversion = scanconfig.get("configVersion")
+                config.configengineid = scanconfig.get("engineID")		
+		
 		return config
 
 	@staticmethod
@@ -122,17 +127,18 @@ class SiteConfiguration(SiteBase):
 		xml_alerting = create_element('Alerting')
 		xml_data.append(xml_alerting)
 
-		# TODO: !!!
-		attributes = {}
-		attributes['configID'] = 3
-		attributes['name'] = 'Full audit without Web Spider'
-		attributes['templateID'] = 'full-audit-without-web-spider'
-		attributes['engineID'] = 3
-		attributes['configVersion'] = 3
-		xml_scanconfig = create_element('ScanConfig')
-		xml_scheduling = create_element('Scheduling')
-		xml_scanconfig.append(xml_scheduling)
-		xml_data.append(xml_scanconfig)
+		#Include ScanConfig attributes
+                attributes = {}
+                attributes['configID'] = self.configid
+                attributes['name'] = self.configname
+                attributes['templateID'] = self.configtemplateid
+                attributes['engineID'] = self.configengineid
+                attributes['configVersion'] = self.configversion
+                xml_scanconfig = create_element('ScanConfig', attributes)
+                xml_scheduling = create_element('Scheduling')
+                xml_scanconfig.append(xml_scheduling)
+                xml_data.append(xml_scanconfig)
+
 
 		#TODO: implement the xxxPrivileges
 		print as_string(as_xml(as_string(xml_data)))
