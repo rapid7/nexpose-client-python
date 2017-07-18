@@ -34,7 +34,7 @@ class ScanConfiguration:
 		self.id = 0
 		self.name = ''
 		self.version = 0
-		self.template_id = 0
+		self.template_id = "full-audit-without-web-spider"
 		self.engine_id = 0
 
 class SiteBase:
@@ -77,8 +77,8 @@ class SiteConfiguration(SiteBase):
 		config.configtemplateid = scanconfig.get("templateID")
 		config.configname = scanconfig.get("name")
 		config.configversion = scanconfig.get("configVersion")
-		config.configengineid = scanconfig.get("engineID")		
-		
+		config.configengineid = scanconfig.get("engineID")
+
 		return config
 
 	@staticmethod
@@ -101,6 +101,11 @@ class SiteConfiguration(SiteBase):
 		self.credentials = [] # TODO
 		self.alerting = [] # TODO
 		self.scan_configuration = [] # TODO
+		self.configid = self.id
+		self.configtemplateid = "full-audit-without-web-spider"
+		self.configname = "Full audit without Web Spider"
+		self.configversion = 3
+		self.configengineid = 3
 
 	def AsXML(self, exclude_id):
 		attributes = {}
@@ -129,27 +134,11 @@ class SiteConfiguration(SiteBase):
 
 		#Include ScanConfig attributes
 		attributes = {}
-		
-		try:
-			attributes['configID'] = self.configid
-		except AttributeError:
-			attributes['configID'] = 3
-		try:
-			attributes['name'] = self.configname
-		except AttributeError:
-			attributes['name'] = "Full audit without Web Spider"
-		try:	
-			attributes['templateID'] = self.configtemplateid
-		except AttributeError:
-			attributes['templateID'] = "full-audit-without-web-spider"
-		try:
-			attributes['engineID'] = self.configengineid
-		except AttributeError:
-			attributes['engineID'] = 3
-		try:
-			attributes['configVersion'] = self.configversion
-		except AttributeError:
-			attributes['configVersion'] = 3
+		attributes['configID'] = self.configid
+		attributes['name'] = self.configname
+		attributes['templateID'] = self.configtemplateid
+		attributes['engineID'] = self.configengineid
+		attributes['configVersion'] = self.configversion
 
 		xml_scanconfig = create_element('ScanConfig', attributes)
 		xml_scheduling = create_element('Scheduling')
