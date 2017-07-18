@@ -71,13 +71,13 @@ class SiteConfiguration(SiteBase):
 		config.is_dynamic = get_attribute(xml_data, 'isDynamic', config.is_dynamic) in ['1', 'true', True]
 		config.hosts = [_host_to_object(host) for host in get_children_of(xml_data, 'Hosts')]
 
-                #Use scanconfig elements for the SiteConfiguration
-                scanconfig = get_element(xml_data, "ScanConfig")
-                config.configid = scanconfig.get("configID")
-                config.configtemplateid = scanconfig.get("templateID")
-                config.configname = scanconfig.get("name")
-                config.configversion = scanconfig.get("configVersion")
-                config.configengineid = scanconfig.get("engineID")		
+		#Use scanconfig elements for the SiteConfiguration
+		scanconfig = get_element(xml_data, "ScanConfig")
+		config.configid = scanconfig.get("configID")
+		config.configtemplateid = scanconfig.get("templateID")
+		config.configname = scanconfig.get("name")
+		config.configversion = scanconfig.get("configVersion")
+		config.configengineid = scanconfig.get("engineID")		
 		
 		return config
 
@@ -128,16 +128,16 @@ class SiteConfiguration(SiteBase):
 		xml_data.append(xml_alerting)
 
 		#Include ScanConfig attributes
-                attributes = {}
-                attributes['configID'] = self.configid
-                attributes['name'] = self.configname
-                attributes['templateID'] = self.configtemplateid
-                attributes['engineID'] = self.configengineid
-                attributes['configVersion'] = self.configversion
-                xml_scanconfig = create_element('ScanConfig', attributes)
-                xml_scheduling = create_element('Scheduling')
-                xml_scanconfig.append(xml_scheduling)
-                xml_data.append(xml_scanconfig)
+		attributes = {}
+		attributes['configID'] = self.configid
+		attributes['name'] = self.configname
+		attributes['templateID'] = self.configtemplateid
+		attributes['engineID'] = self.configengineid
+		attributes['configVersion'] = self.configversion
+		xml_scanconfig = create_element('ScanConfig', attributes)
+		xml_scheduling = create_element('Scheduling')
+		xml_scanconfig.append(xml_scheduling)
+		xml_data.append(xml_scanconfig)
 
 
 		#TODO: implement the xxxPrivileges
