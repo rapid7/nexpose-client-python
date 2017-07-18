@@ -129,11 +129,28 @@ class SiteConfiguration(SiteBase):
 
 		#Include ScanConfig attributes
 		attributes = {}
-		attributes['configID'] = self.configid
-		attributes['name'] = self.configname
-		attributes['templateID'] = self.configtemplateid
-		attributes['engineID'] = self.configengineid
-		attributes['configVersion'] = self.configversion
+		
+		try:
+			attributes['configID'] = self.configid
+		except AttributeError:
+			attributes['configID'] = 3
+		try:
+			attributes['name'] = self.configname
+		except AttributeError:
+			attributes['name'] = "Full audit without Web Spider"
+		try:	
+			attributes['templateID'] = self.configtemplateid
+		except AttributeError:
+			attributes['templateID'] = "full-audit-without-web-spider"
+		try:
+			attributes['engineID'] = self.configengineid
+		except AttributeError:
+			attributes['engineID'] = 3
+		try:
+			attributes['configVersion'] = self.configversion
+		except AttributeError:
+			attributes['configVersion'] = 3
+
 		xml_scanconfig = create_element('ScanConfig', attributes)
 		xml_scheduling = create_element('Scheduling')
 		xml_scanconfig.append(xml_scheduling)
