@@ -1,6 +1,7 @@
 from json_utils import JSON
 from nexpose_criteria import Criteria, Criterion
 from nexpose_asset import AssetBase
+import json
 
 class FilteredAsset(AssetBase, JSON):
 	@staticmethod
@@ -60,5 +61,5 @@ class AssetFilter(JSON):
 		js['dir'] = 'ASC'
 		js['sort'] = 'assetIP' # why can't we sort on ID?
 		js['table-id'] = 'assetfilter'
-		js['searchCriteria'] = self.criteria.as_json()
+		js['searchCriteria'] = json.dumps(self.criteria.as_json(), separators=(',', ':'))
 		return js
