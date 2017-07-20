@@ -379,7 +379,7 @@ class NexposeSession_APIv1d1(NexposeSessionBase):
     def RequestSiteConfig(self, site_id):
         """
         Get the configuration of the specified site.
-        This function will return a single SiteConfigesponse XML object (API 1.1).
+        This function will return a single SiteConfigResponse XML object (API 1.1).
         """
         return self.ExecuteBasicOnSite("SiteConfigRequest", site_id)
 
