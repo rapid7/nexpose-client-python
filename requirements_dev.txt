@@ -1,4 +1,4 @@
 lxml==3.6.0
 py==1.4.31
 pytest==2.9.2
-Sphinx=1.4.5
+Sphinx==1.4.5
