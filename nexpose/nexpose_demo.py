@@ -1,4 +1,7 @@
-﻿from nexpose import OpenNexposeSession, NexposeTag, as_string
+﻿# Future Imports for py2 backwards compatibility
+from __future__ import (absolute_import, division, print_function,
+                        unicode_literals)
+from nexpose import OpenNexposeSession, NexposeTag, as_string
 import json
 
 def output(response):

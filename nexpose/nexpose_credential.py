@@ -1,3 +1,6 @@
+# Future Imports for py2 backwards compatibility
+from __future__ import (absolute_import, division, print_function,
+                        unicode_literals)
 # Auto-created by 'create_credential_code.py'
 from xml_utils import create_element, get_content_of
 from python_utils import is_subclass_of

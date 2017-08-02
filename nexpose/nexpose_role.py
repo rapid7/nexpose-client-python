@@ -1,3 +1,6 @@
+# Future Imports for py2 backwards compatibility
+from __future__ import (absolute_import, division, print_function,
+                        unicode_literals)
 from copy import deepcopy
 from xml_utils import create_element, get_attribute, get_content_of, get_children_of
 
