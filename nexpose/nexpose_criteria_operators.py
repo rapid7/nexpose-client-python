@@ -1,83 +1,108 @@
 class NexposeCriteriaOperator:
-	class __metaclass__(type):
-		@property
-		def Code(cls):
-			return cls.__name__
-		
-		def __str__(cls):
-			return cls.Code
+    class __metaclass__(type):
+        @property
+        def Code(cls):
+            return cls.__name__
+
+        def __str__(cls):
+            return cls.Code
+
 
 class AND(NexposeCriteriaOperator):
-	pass
+    pass
+
 
 class OR(NexposeCriteriaOperator):
-	pass
+    pass
+
 
 class ARE(NexposeCriteriaOperator):
-	pass
+    pass
+
 
 class IS(NexposeCriteriaOperator):
-	pass
+    pass
+
 
 class IS_NOT(NexposeCriteriaOperator):
-	pass
+    pass
+
 
 class STARTS_WITH(NexposeCriteriaOperator):
-	pass
+    pass
+
 
 class ENDS_WITH(NexposeCriteriaOperator):
-	pass
+    pass
+
 
 class IS_EMPTY(NexposeCriteriaOperator):
-	pass
+    pass
+
 
 class IS_NOT_EMPTY(NexposeCriteriaOperator):
-	pass
+    pass
+
 
 class IS_APPLIED(NexposeCriteriaOperator):
-	pass
+    pass
+
 
 class IS_NOT_APPLIED(NexposeCriteriaOperator):
-	pass
+    pass
+
 
 class CONTAINS(NexposeCriteriaOperator):
-	pass
+    pass
+
 
 class NOT_CONTAINS(NexposeCriteriaOperator):
-	pass
+    pass
+
 
 class INCLUDE(NexposeCriteriaOperator):
-	pass
+    pass
+
 
 class DO_NOT_INCLUDE(NexposeCriteriaOperator):
-	pass
+    pass
+
 
 class IN(NexposeCriteriaOperator):
-	pass
+    pass
+
 
 class NOT_IN(NexposeCriteriaOperator):
-	pass
+    pass
+
 
 class IN_RANGE(NexposeCriteriaOperator):
-	pass
+    pass
+
 
 class LESS_THAN(NexposeCriteriaOperator):
-	pass
+    pass
+
 
 class GREATER_THAN(NexposeCriteriaOperator):
-	pass
+    pass
+
 
 class ON_OR_BEFORE(NexposeCriteriaOperator):
-	pass
+    pass
+
 
 class ON_OR_AFTER(NexposeCriteriaOperator):
-	pass
+    pass
+
 
 class BETWEEN(NexposeCriteriaOperator):
-	pass
+    pass
+
 
 class EARLIER_THAN(NexposeCriteriaOperator):
-	pass
+    pass
+
 
 class WITHIN_THE_LAST(NexposeCriteriaOperator):
-	pass
+    pass
