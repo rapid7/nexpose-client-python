@@ -3,12 +3,14 @@ from xml_utils import create_element, get_content_of
 from python_utils import is_subclass_of
 import sys
 
+
 def GetSupportedCredentials():
     this_module = sys.modules[__name__]
     credentials = [this_module.__dict__[name] for name in dir(this_module) if is_subclass_of(this_module.__dict__[name], Credential)]
     for credential in credentials:
         if credential.SERVICE_TYPE:
             yield credential
+
 
 class Credential:
     SERVICE_TYPE = None
@@ -20,22 +22,25 @@ class Credential:
         for credential in GetSupportedCredentials():
             if service_type == credential.SERVICE_TYPE:
                 return credential.CreateFromXML(xml)
-        return None # TODO: raise exception
+        return None  # TODO: raise exception
 
     @staticmethod
     def CreateFromType(service_type):
         for credential in GetSupportedCredentials():
             if service_type == credential.SERVICE_TYPE:
                 return credential.Create()
-        return None # TODO: raise exception
+        return None  # TODO: raise exception
+
 
 def _create_field(key, value):
     field = create_element('Field', {'name': key})
     field.text = value
     return field
 
+
 def _create_field_and_append(xml, key, value):
     xml.append(_create_field(key, value))
+
 
 class Credential_RemoteExecution(Credential):
     SERVICE_TYPE = 'remote execution'
@@ -64,6 +69,7 @@ class Credential_RemoteExecution(Credential):
         _create_field_and_append(xml, 'password', self.password)
         return xml
 
+
 class Credential_FTP(Credential):
     SERVICE_TYPE = 'ftp'
     DEFAULT_PORT = 21
@@ -90,6 +96,7 @@ class Credential_FTP(Credential):
         _create_field_and_append(xml, 'username', self.username)
         _create_field_and_append(xml, 'password', self.password)
         return xml
+
 
 class Credential_SSH_KEY(Credential):
     SERVICE_TYPE = 'ssh-key'
@@ -130,6 +137,7 @@ class Credential_SSH_KEY(Credential):
         _create_field_and_append(xml, 'privilegeelevationtype', self.privilege_elevation_type)
         return xml
 
+
 class Credential_HTTP(Credential):
     SERVICE_TYPE = 'http'
     DEFAULT_PORT = 80
@@ -159,6 +167,7 @@ class Credential_HTTP(Credential):
         _create_field_and_append(xml, 'password', self.password)
         _create_field_and_append(xml, 'domain', self.domain)
         return xml
+
 
 class Credential_CIFS(Credential):
     SERVICE_TYPE = 'cifs'
@@ -190,6 +199,7 @@ class Credential_CIFS(Credential):
         _create_field_and_append(xml, 'domain', self.domain)
         return xml
 
+
 class Credential_AS400(Credential):
     SERVICE_TYPE = 'as400'
     DEFAULT_PORT = 449
@@ -220,6 +230,7 @@ class Credential_AS400(Credential):
         _create_field_and_append(xml, 'domain', self.domain)
         return xml
 
+
 class Credential_Notes(Credential):
     SERVICE_TYPE = 'notes'
     DEFAULT_PORT = 1352
@@ -244,6 +255,7 @@ class Credential_Notes(Credential):
         _create_field_and_append(xml, 'password', self.password)
         return xml
 
+
 class Credential_SNMP(Credential):
     SERVICE_TYPE = 'snmp'
     DEFAULT_PORT = 161
@@ -267,6 +279,7 @@ class Credential_SNMP(Credential):
         xml = create_element('Account', {'type': 'nexpose'})
         _create_field_and_append(xml, 'password', self.password)
         return xml
+
 
 class Credential_CVS(Credential):
     SERVICE_TYPE = 'cvs'
@@ -295,6 +308,7 @@ class Credential_CVS(Credential):
         _create_field_and_append(xml, 'password', self.password)
         return xml
 
+
 class Credential_POP(Credential):
     SERVICE_TYPE = 'pop'
     DEFAULT_PORT = 110
@@ -321,6 +335,7 @@ class Credential_POP(Credential):
         _create_field_and_append(xml, 'username', self.username)
         _create_field_and_append(xml, 'password', self.password)
         return xml
+
 
 class Credential_Sybase(Credential):
     SERVICE_TYPE = 'sybase'
@@ -355,6 +370,7 @@ class Credential_Sybase(Credential):
         _create_field_and_append(xml, 'database', self.database)
         return xml
 
+
 class Credential_DB2(Credential):
     SERVICE_TYPE = 'db2'
     DEFAULT_PORT = 50000
@@ -385,6 +401,7 @@ class Credential_DB2(Credential):
         _create_field_and_append(xml, 'database', self.database)
         return xml
 
+
 class Credential_Telnet(Credential):
     SERVICE_TYPE = 'telnet'
     DEFAULT_PORT = 23
@@ -411,6 +428,7 @@ class Credential_Telnet(Credential):
         _create_field_and_append(xml, 'username', self.username)
         _create_field_and_append(xml, 'password', self.password)
         return xml
+
 
 class Credential_Oracle(Credential):
     SERVICE_TYPE = 'oracle'
@@ -442,6 +460,7 @@ class Credential_Oracle(Credential):
         _create_field_and_append(xml, 'database', self.database)
         return xml
 
+
 class Credential_MySQL(Credential):
     SERVICE_TYPE = 'mysql'
     DEFAULT_PORT = 3306
@@ -471,6 +490,7 @@ class Credential_MySQL(Credential):
         _create_field_and_append(xml, 'password', self.password)
         _create_field_and_append(xml, 'database', self.database)
         return xml
+
 
 class Credential_TDS(Credential):
     SERVICE_TYPE = 'tds'
@@ -505,6 +525,7 @@ class Credential_TDS(Credential):
         _create_field_and_append(xml, 'database', self.database)
         return xml
 
+
 class Credential_CIFS_Hash(Credential):
     SERVICE_TYPE = 'cifshash'
     DEFAULT_PORT = 445
@@ -535,6 +556,7 @@ class Credential_CIFS_Hash(Credential):
         _create_field_and_append(xml, 'ntlmhash', self.ntlm_hash)
         return xml
 
+
 class Credential_PostgreSQL(Credential):
     SERVICE_TYPE = 'postgresql'
     DEFAULT_PORT = 5432
@@ -564,6 +586,7 @@ class Credential_PostgreSQL(Credential):
         _create_field_and_append(xml, 'password', self.password)
         _create_field_and_append(xml, 'database', self.database)
         return xml
+
 
 class Credential_SSH(Credential):
     SERVICE_TYPE = 'ssh'
@@ -601,6 +624,7 @@ class Credential_SSH(Credential):
         _create_field_and_append(xml, 'privilegeelevationtype', self.privilege_elevation_type)
         return xml
 
+
 class Credential_SNMPV3(Credential):
     SERVICE_TYPE = 'snmpv3'
     DEFAULT_PORT = 161
@@ -637,9 +661,10 @@ class Credential_SNMPV3(Credential):
         _create_field_and_append(xml, 'snmpv3privpassword', self.snmpv3_private_password)
         return xml
 
+
 class PrivilegeElevationType:
-    NONE = 'NONE' # none
-    SUDO = 'SUDO' # sudo
-    SUDOSU = 'SUDOSU' # sudo+su
-    SU = 'SU' # su
-    PBRUN = 'PBRUN' # pbrun
+    NONE = 'NONE'  # none
+    SUDO = 'SUDO'  # sudo
+    SUDOSU = 'SUDOSU'  # sudo+su
+    SU = 'SU'  # su
+    PBRUN = 'PBRUN'  # pbrun
