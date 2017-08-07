@@ -1,6 +1,3 @@
-# Future Imports for py2 backwards compatibility
-from __future__ import (absolute_import, division, print_function,
-                        unicode_literals)
 from json_utils import get_id as _get_id, HasID, JSON
 
 DEFAULT_SOURCENAME = "DavinsiLabs-Nexpose-Python"

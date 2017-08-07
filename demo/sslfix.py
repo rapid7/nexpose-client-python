@@ -1,7 +1,4 @@
 # SOURCE: http://stackoverflow.com/questions/11772847/error-urlopen-error-errno-8-ssl-c504-eof-occurred-in-violation-of-protoco
-# Future Imports for py2 backwards compatibility
-from __future__ import (absolute_import, division, print_function,
-                        unicode_literals)
 import ssl
 from functools import wraps
 

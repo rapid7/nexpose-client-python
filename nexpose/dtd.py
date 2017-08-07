@@ -1,7 +1,4 @@
-﻿# Future Imports for py2 backwards compatibility
-from __future__ import (absolute_import, division, print_function,
-                        unicode_literals)
-Device_DTD = """
+﻿Device_DTD = """
 <!DOCTYPE device [
 <!ELEMENT device (description?)>
 <!-- the ID of the device -->

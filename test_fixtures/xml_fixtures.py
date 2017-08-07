@@ -1,6 +1,3 @@
-# Future Imports for py2 backwards compatibility
-from __future__ import (absolute_import, division, print_function,
-                        unicode_literals)
 # TODO: decide wether or not to use this class (currently unused)
 class NexposeXmlFixtures:
 	LoginRequest = '<LoginRequest user-id="nxadmin" password="nxadmin" />'
