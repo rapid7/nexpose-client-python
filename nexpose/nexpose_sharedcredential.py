@@ -24,39 +24,41 @@ from nexpose_credential import Credential
     end
 """
 
+
 class SharedCredentialBase:
     def __init__(self):
         self.id = 0
         self.name = ''
         self.all_sites = True
-        
+
     def _get_service(self):
         return ''
-    
+
     @property
     def service(self):
         return self._get_service()
+
 
 class SharedCredentialSummary(SharedCredentialBase):
     @staticmethod
     def CreateFromJSON(json):
         credential = SharedCredentialSummary()
-        
+
         # SharedCredentialBase:
         credential.id = int(json['credentialID']['ID'])
         credential.name = json['name']
         credential.all_sites = json['scope'] == 'ALL_SITES_ENABLED_DEFAULT'
-        
+
         #SharedCredentialSummary-specific:
         credential._service = json['service']
         credential.username = json['username']
         credential.domain = json['domain']
         credential.privilege_username = json['privilegeElevationUsername']
         credential.site_count = json['assignedSites']
-        credential.last_modified = json['lastModified']['time'] # TODO
-        
+        credential.last_modified = json['lastModified']['time']  # TODO
+
         return credential
-    
+
     def __init__(self):
         SharedCredentialBase.__init__(self)
         self.username = ''
@@ -64,9 +66,10 @@ class SharedCredentialSummary(SharedCredentialBase):
         self.privilege_username = ''
         self.site_count = 0
         self.last_modified = ''
-    
+
     def _get_service(self):
         return self._service
+
 
 class SharedCredentialConfiguration(SharedCredentialBase):
     @staticmethod
@@ -82,10 +85,10 @@ class SharedCredentialConfiguration(SharedCredentialBase):
         credential.restriction_host = get_content_of(xml, "Restrictions/Restriction/[@type='host']", credential.restriction_host)
         credential.restriction_port = int(get_content_of(xml, "Restrictions/Restriction/[@type='port']", credential.restriction_port))
         credential.all_sites = get_attribute(get_element(xml, "Sites"), 'all') == '1'
-        credential.enabled_sites  = [get_attribute(site, 'id') for site in sites if get_attribute(site, 'enabled') == '1']
+        credential.enabled_sites = [get_attribute(site, 'id') for site in sites if get_attribute(site, 'enabled') == '1']
         credential.disabled_sites = [get_attribute(site, 'id') for site in sites if get_attribute(site, 'enabled') != '1']
         return credential
-    
+
     @staticmethod
     def Create():
         credential = SharedCredentialConfiguration()
@@ -96,14 +99,14 @@ class SharedCredentialConfiguration(SharedCredentialBase):
         if self.credential:
             return self.credential.SERVICE_TYPE
         return None
-    
+
     def __init__(self):
         SharedCredentialBase.__init__(self)
         self.description = ''
         self.credential = None
         self.restriction_host = ''
         self.restriction_port = 0
-        self.enabled_sites  = []
+        self.enabled_sites = []
         self.disabled_sites = []
 
     def AsXML(self):
@@ -129,5 +132,5 @@ class SharedCredentialConfiguration(SharedCredentialBase):
             xml_restriction.text = self.restriction_port
             xml_restrictions.append(xml_restriction)
         xml.append(xml_restrictions)
-        xml.append(create_element('Sites', {'all': 1 if self.all_sites else 0})) # TODO: enabled/disabled sites
+        xml.append(create_element('Sites', {'all': 1 if self.all_sites else 0}))  # TODO: enabled/disabled sites
         return xml

@@ -1,7 +1,8 @@
 # Future Imports for py2 backwards compatibility
 from __future__ import (absolute_import, division, print_function,
                         unicode_literals)
-import urllib, urllib2
+import urllib
+import urllib2
 import base64
 from itertools import imap
 
@@ -41,6 +42,7 @@ import nexpose_criteria as Criteria
 
 DEFAULT_BLOCK_SIZE = 32768
 
+
 def OpenWebRequest(uri, post_data, headers, timeout, get_method=None):
     request = urllib2.Request(uri, post_data, headers)
     if get_method:
@@ -51,41 +53,48 @@ def OpenWebRequest(uri, post_data, headers, timeout, get_method=None):
         response = urllib2.urlopen(request, timeout=timeout)
     return response
 
+
 def ExecuteWebRequest(uri, post_data, headers, timeout, get_method=None):
     response = OpenWebRequest(uri, post_data, headers, timeout, get_method)
     return response.read()
 
+
 def Execute_APIv1d1(uri, xml_input, timeout):
     post_data = as_string(xml_input)
-    headers = {"Content-type" : "text/xml"} # TODO: add charset=UTF-8'
+    headers = {"Content-type"  "text/xml"}  # TODO: add charset=UTF-8'
     response = ExecuteWebRequest(uri, post_data, headers, timeout)
     return as_xml(response)
 
+
 def Execute_APIv1d2(uri, xml_input, timeout):
     return Execute_APIv1d1(uri, xml_input, timeout)
+
 
 def CreateHeadersWithSessionCookie(session_id):
     headers = {}
     headers["Cookie"] = "nexposeCCSessionID={0}".format(session_id)
     return headers
 
+
 def CreateHeadersWithSessionCookieAndCustomHeader(session_id):
     headers = CreateHeadersWithSessionCookie(session_id)
     headers["nexposeCCSessionID"] = "{0}".format(session_id)
     return headers
 
+
 # SOURCE: https://github.com/rapid7/nexpose-client/blob/master/lib/nexpose/ajax.rb
 def ExecuteGet_JSON(session_id, uri, sub_url, timeout, options=None):
-    if options == None:
+    if options is None:
         options = {}
     options = map(lambda a: "{0}={1}".format(a[0], a[1]), options.iteritems())
     headers = CreateHeadersWithSessionCookie(session_id)
     #headers["Accept-Encoding"] = "utf-8"
-    if sub_url.startswith('http'): # TODO: refactor uri & sub_url so that json_utils.resolve_urls can work better
+    if sub_url.startswith('http'):  # TODO: refactor uri & sub_url so that json_utils.resolve_urls can work better
         uri = sub_url
     else:
         uri = uri + sub_url + ("" if not options else "?" + "&".join(options))
     return ExecuteWebRequest(uri, None, headers, timeout).decode("utf-8")
+
 
 def ExecuteWithPostData_FORM(session_id, uri, sub_url, timeout, post_data):
     headers = CreateHeadersWithSessionCookieAndCustomHeader(session_id)
@@ -98,6 +107,7 @@ def ExecuteWithPostData_FORM(session_id, uri, sub_url, timeout, post_data):
         post_data = urllib.urlencode(utf8_encoded(post_data))
     return ExecuteWebRequest(uri + sub_url, post_data, headers, timeout, lambda: 'POST')
 
+
 def ExecuteWithPostData_JSON(session_id, uri, sub_url, timeout, post_data, get_method):
     headers = CreateHeadersWithSessionCookieAndCustomHeader(session_id)
     headers["Content-Type"] = "application/json; charset=UTF-8"
@@ -106,11 +116,14 @@ def ExecuteWithPostData_JSON(session_id, uri, sub_url, timeout, post_data, get_m
     post_data = post_data.encode('utf-8')
     return ExecuteWebRequest(uri + sub_url, post_data, headers, timeout, get_method)
 
+
 def ExecutePost_JSON(session_id, uri, sub_url, timeout, post_data):
     return ExecuteWithPostData_JSON(session_id, uri, sub_url, timeout, post_data, None)
 
+
 def ExecutePut_JSON(session_id, uri, sub_url, timeout, post_data):
     return ExecuteWithPostData_JSON(session_id, uri, sub_url, timeout, post_data, lambda: 'PUT')
+
 
 def ExecuteDelete_JSON(session_id, uri, sub_url, timeout):
     headers = CreateHeadersWithSessionCookieAndCustomHeader(session_id)
@@ -129,54 +142,71 @@ def ExecuteDelete_JSON(session_id, uri, sub_url, timeout):
         raise e
     return False
 
-def ExecutePagedGet_JSON(session_id, uri, sub_url, timeout, per_page = 2147483647):
+
+def ExecutePagedGet_JSON(session_id, uri, sub_url, timeout, per_page=2147483647):
     options = {}
-    options["per_page"] = per_page # NOTA: API 2.0 defaults this to 500 if not set
+    options["per_page"] = per_page  # NOTA: API 2.0 defaults this to 500 if not set
     result = ExecuteGet_JSON(session_id, uri, sub_url, timeout, options)
     return json.loads(result)
 
+
 def BuildRootURI(host, port):
-    if not host: host = "localhost"
-    if not port: port = 3780
+    if not host:
+        host = "localhost"
+    if not port:
+        port = 3780
     return "https://{0}:{1}/".format(host, port)
 
+
 def BuildURI(host, port, version, sub_url=None):
-    if not sub_url: sub_url = ''
+    if not sub_url:
+        sub_url = ''
     return BuildRootURI(host, port) + "api/{0}/{1}".format(version, sub_url)
+
 
 def BuildURI_root(host, port=None):
     return BuildRootURI(host, port)
 
+
 def BuildURI_APIv1d1(host, port=None):
     return BuildURI(host, port, "1.1", "xml")
+
 
 def BuildURI_APIv1d2(host, port=None):
     return BuildURI(host, port, "1.2", "xml")
 
+
 def BuildURI_APIv2d0(host, port=None):
     return BuildURI(host, port, "2.0")
+
 
 def BuildURI_APIv2d1(host, port=None):
     return BuildURI(host, port, "2.1")
 
+
 def create_objects_from_xml(elements, object_creator):
     return imap(object_creator, elements)
 
+
 def request_and_create_objects_from_xml(requestor, xpath, object_creator):
     return create_objects_from_xml(requestor().iterfind(xpath), object_creator.__call__)
+
 
 def BuildLoginRequest(username, password):
     attributes = {'user-id': username, 'password': password}
     login_request = create_element("LoginRequest", attributes)
     return login_request
 
+
 def BuildRequest(session_id, tag, extra_attributes=None):
     request = create_element(tag, extra_attributes)
     request.attrib["session-id"] = session_id
     return request
 
+
 def _HasSucceeded(result):
     return result.startswith('<result') and result.endswith('>') and 'succeded' in result
+
 
 def DownloadFromStreamReader(reader, callback_function=None, block_size=DEFAULT_BLOCK_SIZE):
     if block_size < 1:
@@ -209,18 +239,22 @@ class NexposeException(Exception):
     def __init__(self, message):
         super(NexposeException, self).__init__(message)
 
+
 class NexposeConnectionException(NexposeException):
     def __init__(self, message, inner_exception):
         super(NexposeConnectionException, self).__init__(message)
         self.inner_exception = inner_exception
 
+
 class SessionIsNotOpenException(NexposeException):
     def __init__(self, message):
         super(SessionIsNotOpenException, self).__init__(message)
 
+
 class SessionIsNotClosedException(NexposeException):
     def __init__(self, message):
         super(SessionIsNotClosedException, self).__init__(message)
+
 
 class NexposeFailureException(NexposeException):
     def __init__(self, message):
@@ -304,15 +338,15 @@ class NexposeSession_APIv1d1(NexposeSessionBase):
         extra = {'site-id': site_id}
         return self.ExecuteBasicXML(tag, extra)
 
-    def ExecuteBasicOnOptionalSite(self, tag, site_id):		
+    def ExecuteBasicOnOptionalSite(self, tag, site_id):
         extra = {'site-id': site_id} if site_id else None
         return self.ExecuteBasicXML(tag, extra)
 
-    def ExecuteBasicOnDevice(self, tag, device_id):		
+    def ExecuteBasicOnDevice(self, tag, device_id):
         extra = {'device-id': device_id}
         return self.ExecuteBasicXML(tag, extra)
 
-    def ExecuteBasicOnScan(self, tag, scan_id):		
+    def ExecuteBasicOnScan(self, tag, scan_id):
         extra = {'scan-id': scan_id}
         return self.ExecuteBasicXML(tag, extra)
 
@@ -322,7 +356,7 @@ class NexposeSession_APIv1d1(NexposeSessionBase):
 
     def ExecuteBasicOnAssetGroup(self, tag, assetgroup_id):
         extra = {'group-id': assetgroup_id}
-        return self.ExecuteBasicXML(tag, extra)		
+        return self.ExecuteBasicXML(tag, extra)
 
     def ExecuteBasicOnReport(self, tag, reportcfg_id):
         extra = {'report-id': reportcfg_id}
@@ -436,7 +470,7 @@ class NexposeSession_APIv1d1(NexposeSessionBase):
         return self.ExecuteBasicOnDevice("DeviceDeleteRequest", device_id)
 
     def RequestSiteDevicesScan(self):
-        raise NotImplementedError() # TODO ?
+        raise NotImplementedError()  # TODO ?
 
     #
     # The following functions implement the Asset Group Management API:
@@ -457,10 +491,10 @@ class NexposeSession_APIv1d1(NexposeSessionBase):
         return self.ExecuteBasicOnAssetGroup("AssetGroupConfigRequest", assetgroup_id)
 
     def RequestAssetGroupSave(self):
-        raise NotImplementedError() # TODO
+        raise NotImplementedError()  # TODO
 
     def RequestAssetGroupDelete(self):
-        raise NotImplementedError() # TODO
+        raise NotImplementedError()  # TODO
 
     #
     # The following functions implement the Scan Engine Management API:
@@ -470,7 +504,7 @@ class NexposeSession_APIv1d1(NexposeSessionBase):
         return self.ExecuteBasicXML("EngineListingRequest")
 
     def RequestEngineActivity(self, engine_id):
-        raise NotImplementedError() # implemented in API 1.2
+        raise NotImplementedError()  # implemented in API 1.2
 
     #
     # The following functions implement the Scan API:
@@ -523,10 +557,10 @@ class NexposeSession_APIv1d1(NexposeSessionBase):
     # ==================================================================
 
     def RequestVulnerabilityListing(self):
-        raise NotImplementedError() # implemented in API 1.2
+        raise NotImplementedError()  # implemented in API 1.2
 
     def RequestVulnerabilityDetails(self, vulnerability_id):
-        raise NotImplementedError() # implemented in API 1.2
+        raise NotImplementedError()  # implemented in API 1.2
 
     #
     # The following functions implement the Reporting API:
@@ -540,10 +574,10 @@ class NexposeSession_APIv1d1(NexposeSessionBase):
         return self.ExecuteBasicXML("ReportTemplateListingRequest")
 
     def RequestReportTemplateConfig(self):
-        raise NotImplementedError() # TODO
+        raise NotImplementedError()  # TODO
 
     def RequestReportTemplateSave(self):
-        raise NotImplementedError() # TODO
+        raise NotImplementedError()  # TODO
 
     def RequestReportListing(self):
         """
@@ -568,7 +602,7 @@ class NexposeSession_APIv1d1(NexposeSessionBase):
         return self.ExecuteBasicOnReportConfiguration("ReportConfigRequest", reportconfiguration_id)
 
     def RequestReportSave(self):
-        raise NotImplementedError() # TODO
+        raise NotImplementedError()  # TODO
 
     def RequestReportGenerate(self, reportconfiguration_id):
         """
@@ -598,8 +632,8 @@ class NexposeSession_APIv1d1(NexposeSessionBase):
 </AdhocReportConfig>
 """
         return self.ExecuteBasicWithElement("ReportAdhocGenerateRequest", {}, as_xml(request.format(id)))
-        raise NotImplementedError() # TODO
-    
+        raise NotImplementedError()  # TODO
+
     #
     # The following functions implement the User Management API:
     # =========================================================
@@ -722,24 +756,24 @@ class NexposeSession_APIv1d2(NexposeSession_APIv1d1):
     def ExecuteAdvanced(self, tag, extra_attributes=None):
         return self.ExecuteAdvancedWithElement(tag, extra_attributes, None)
 
-    def ExecuteAdvancedAfterCallingAsXML(self, tag, nexpose_object, exclude_id):		
+    def ExecuteAdvancedAfterCallingAsXML(self, tag, nexpose_object, exclude_id):
         return self.ExecuteAdvancedWithElement(tag, {}, nexpose_object.AsXML(exclude_id))
 
-    def ExecuteAdvancedOnVulnerability(self, tag, vulnerability_id):		
+    def ExecuteAdvancedOnVulnerability(self, tag, vulnerability_id):
         extra = {'vuln-id': vulnerability_id}
         return self.ExecuteAdvanced(tag, extra)
 
-    def ExecuteAdvancedOnVulnerabilityException(self, tag, exception_id):		
+    def ExecuteAdvancedOnVulnerabilityException(self, tag, exception_id):
         extra = {'exception-id': exception_id}
         return self.ExecuteAdvanced(tag, extra)
 
-    def ExecuteAdvancedOnEngine(self, tag, engine_id, scope=None):		
+    def ExecuteAdvancedOnEngine(self, tag, engine_id, scope=None):
         extra = {'engine-id': engine_id}
         if scope is not None:
             extra['scope'] = scope
         return self.ExecuteAdvanced(tag, extra)
 
-    def ExecuteAdvancedOnRole(self, tag, role_name, role_scope):		
+    def ExecuteAdvancedOnRole(self, tag, role_name, role_scope):
         return self.ExecuteAdvancedWithElement(tag, {}, "Role", {'name': role_name, 'scope': role_scope})
 
     def ExecuteAdvancedOnTicket(self, tag, ticket_id):
@@ -754,7 +788,7 @@ class NexposeSession_APIv1d2(NexposeSession_APIv1d1):
         Return all details of a specified DiscoveryConnection (by name and scope).
         This function will return a single DiscoveryConnectionConfigurationResponse XML object (API 1.2).
         """
-        return self.ExecuteAdvancedOnDiscoveryConnection("DiscoveryConnectionConfigurationRequest", DiscoveryConnection_name, DiscoveryConnection_scope) # TODO
+        return self.ExecuteAdvancedOnDiscoveryConnection("DiscoveryConnectionConfigurationRequest", DiscoveryConnection_name, DiscoveryConnection_scope)  # TODO
 
     def RequestDiscoveryConnectionCreate(self, discoveryconnection_configuration):
         """
@@ -762,14 +796,14 @@ class NexposeSession_APIv1d2(NexposeSession_APIv1d1):
         Both name and fullname must be unique.
         This function will return a single DiscoveryConnectionCreateResponse XML object (API 1.2).
         """
-        return self.ExecuteAdvancedAfterCallingAsXML("DiscoveryConnectionCreateRequest", discoveryconnection_configuration, exclude_id=True) # TODO
+        return self.ExecuteAdvancedAfterCallingAsXML("DiscoveryConnectionCreateRequest", discoveryconnection_configuration, exclude_id=True)  # TODO
 
     def RequestDiscoveryConnectionListing(self):
         """
         Return all DiscoveryConnections.
         This function will return a single DiscoveryConnectionListingResponse XML object (API 1.2).
         """
-        return self.ExecuteAdvanced("DiscoveryConnectionListingRequest") # TODO
+        return self.ExecuteAdvanced("DiscoveryConnectionListingRequest")  # TODO
 
     def RequestDiscoveryConnectionUpdate(self, discoveryconnection_configuration):
         """
@@ -777,14 +811,14 @@ class NexposeSession_APIv1d2(NexposeSession_APIv1d1):
         Both name and fullname must be unique.
         This function will return a single DiscoveryConnectionUpdateResponse XML object (API 1.2).
         """
-        return self.ExecuteAdvancedAfterCallingAsXML("DiscoveryConnectionUpdateRequest", discoveryconnection_configuration, exclude_id=False) # TODO
+        return self.ExecuteAdvancedAfterCallingAsXML("DiscoveryConnectionUpdateRequest", discoveryconnection_configuration, exclude_id=False)  # TODO
 
     def RequestDiscoveryConnectionDelete(self, DiscoveryConnection_name, DiscoveryConnection_scope):
         """
         Delete a specified DiscoveryConnection (by name and scope).
         This function will return a single DiscoveryConnectionDeleteResponse XML object (API 1.2).
         """
-        return self.ExecuteAdvancedOnDiscoveryConnection("DiscoveryConnectionDeleteRequest", DiscoveryConnection_name, DiscoveryConnection_scope) # TODO
+        return self.ExecuteAdvancedOnDiscoveryConnection("DiscoveryConnectionDeleteRequest", DiscoveryConnection_name, DiscoveryConnection_scope)  # TODO
 
     #
     # The following functions implement the Scan Engine Management API:
@@ -861,31 +895,31 @@ class NexposeSession_APIv1d2(NexposeSession_APIv1d1):
         """
         This function will return a single MultiTenantUserCreateResponse XML object (API 1.2).
         """
-        return self.ExecuteAdvanced("MultiTenantUserCreateRequest") # TODO
+        return self.ExecuteAdvanced("MultiTenantUserCreateRequest")  # TODO
 
     def RequestMultiTenantUserListing(self):
         """
         This function will return a single MultiTenantUserListingResponse XML object (API 1.2).
         """
-        return self.ExecuteAdvanced("MultiTenantUserListingRequest") # TODO
+        return self.ExecuteAdvanced("MultiTenantUserListingRequest")  # TODO
 
     def RequestMultiTenantUserUpdate(self):
         """
         This function will return a single MultiTenantUserUpdateResponse XML object (API 1.2).
         """
-        return self.ExecuteAdvanced("MultiTenantUserUpdateRequest") # TODO
+        return self.ExecuteAdvanced("MultiTenantUserUpdateRequest")  # TODO
 
     def RequestMultiTenantUserConfig(self):
         """
         This function will return a single MultiTenantUserConfigResponse XML object (API 1.2).
         """
-        return self.ExecuteAdvanced("MultiTenantUserConfigRequest") # TODO
+        return self.ExecuteAdvanced("MultiTenantUserConfigRequest")  # TODO
 
     def RequestMultiTenantUserDelete(self):
         """
         This function will return a single MultiTenantUserDeleteResponse XML object (API 1.2).
         """
-        return self.ExecuteAdvanced("MultiTenantUserDeleteRequest") # TODO
+        return self.ExecuteAdvanced("MultiTenantUserDeleteRequest")  # TODO
 
     #
     # The following functions implement the Silo Profile Management API:
@@ -895,31 +929,31 @@ class NexposeSession_APIv1d2(NexposeSession_APIv1d1):
         """
         This function will return a single SiloProfileCreateResponse XML object (API 1.2).
         """
-        return self.ExecuteAdvanced("SiloProfileCreateRequest") # TODO
+        return self.ExecuteAdvanced("SiloProfileCreateRequest")  # TODO
 
     def RequestSiloProfileListing(self):
         """
         This function will return a single SiloProfileListingResponse XML object (API 1.2).
         """
-        return self.ExecuteAdvanced("SiloProfileListingRequest") # TODO
+        return self.ExecuteAdvanced("SiloProfileListingRequest")  # TODO
 
     def RequestSiloProfileUpdate(self):
         """
         This function will return a single SiloProfileUpdateResponse XML object (API 1.2).
         """
-        return self.ExecuteAdvanced("SiloProfileUpdateRequest") # TODO
+        return self.ExecuteAdvanced("SiloProfileUpdateRequest")  # TODO
 
     def RequestSiloProfileConfig(self):
         """
         This function will return a single SiloProfileConfigResponse XML object (API 1.2).
         """
-        return self.ExecuteAdvanced("SiloProfileConfigRequest") # TODO
+        return self.ExecuteAdvanced("SiloProfileConfigRequest")  # TODO
 
     def RequestSiloProfileDelete(self):
         """
         This function will return a single SiloProfileDeleteResponse XML object (API 1.2).
         """
-        return self.ExecuteAdvanced("SiloProfileDeleteRequest") # TODO
+        return self.ExecuteAdvanced("SiloProfileDeleteRequest")  # TODO
 
     #
     # The following functions implement the Silo Management API:
@@ -929,31 +963,31 @@ class NexposeSession_APIv1d2(NexposeSession_APIv1d1):
         """
         This function will return a single SiloCreateResponse XML object (API 1.2).
         """
-        return self.ExecuteAdvanced("SiloCreateRequest") # TODO
+        return self.ExecuteAdvanced("SiloCreateRequest")  # TODO
 
     def RequestSiloListing(self):
         """
         This function will return a single SiloListingResponse XML object (API 1.2).
         """
-        return self.ExecuteAdvanced("SiloListingRequest") # TODO
+        return self.ExecuteAdvanced("SiloListingRequest")  # TODO
 
     def RequestSiloConfig(self):
         """
         This function will return a single SiloConfigResponse XML object (API 1.2).
         """
-        return self.ExecuteAdvanced("SiloConfigRequest") # TODO
+        return self.ExecuteAdvanced("SiloConfigRequest")  # TODO
 
     def RequestSiloUpdate(self):
         """
         This function will return a single SiloUpdateResponse XML object (API 1.2).
         """
-        return self.ExecuteAdvanced("SiloUpdateRequest") # TODO
+        return self.ExecuteAdvanced("SiloUpdateRequest")  # TODO
 
     def RequestSiloDelete(self):
         """
         This function will return a single SiloDeleteResponse XML object (API 1.2).
         """
-        return self.ExecuteAdvanced("SiloDeleteRequest") # TODO
+        return self.ExecuteAdvanced("SiloDeleteRequest")  # TODO
 
     #
     # The following functions implement the Role Management API:
@@ -1004,31 +1038,31 @@ class NexposeSession_APIv1d2(NexposeSession_APIv1d1):
         """
         This function will return a single EnginePoolCreateResponse XML object (API 1.2).
         """
-        return self.ExecuteAdvanced("EnginePoolCreateRequest") # TODO
+        return self.ExecuteAdvanced("EnginePoolCreateRequest")  # TODO
 
     def RequestEnginePoolListing(self):
         """
         This function will return a single EnginePoolListingResponse XML object (API 1.2).
         """
-        return self.ExecuteAdvanced("EnginePoolListingRequest") # TODO
+        return self.ExecuteAdvanced("EnginePoolListingRequest")  # TODO
 
     def RequestEnginePoolDetails(self):
         """
         This function will return a single EnginePoolDetailsResponse XML object (API 1.2).
         """
-        return self.ExecuteAdvanced("EnginePoolDetailsRequest") # TODO
+        return self.ExecuteAdvanced("EnginePoolDetailsRequest")  # TODO
 
     def RequestEnginePoolUpdate(self):
         """
         This function will return a single EnginePoolUpdateResponse XML object (API 1.2).
         """
-        return self.ExecuteAdvanced("EnginePoolUpdateRequest") # TODO
+        return self.ExecuteAdvanced("EnginePoolUpdateRequest")  # TODO
 
     def RequestEnginePoolDelete(self):
         """
         This function will return a single EnginePoolDeleteResponse XML object (API 1.2).
         """
-        return self.ExecuteAdvanced("EnginePoolDeleteRequest") # TODO
+        return self.ExecuteAdvanced("EnginePoolDeleteRequest")  # TODO
 
     #
     # The following functions implement the Vulnerability Management API:
@@ -1068,7 +1102,7 @@ class NexposeSession_APIv1d2(NexposeSession_APIv1d1):
         """
         This function will return a single VulnerabilityExceptionCreateResponse XML object (API 1.2).
         """
-        return self.ExecuteAdvanced("VulnerabilityExceptionCreateRequest") # TODO
+        return self.ExecuteAdvanced("VulnerabilityExceptionCreateRequest")  # TODO
 
     def RequestVulnerabilityExceptionResubmit(self, exception_id, reason, comment):
         """
@@ -1114,13 +1148,13 @@ class NexposeSession_APIv1d2(NexposeSession_APIv1d1):
         """
         This function will return a single VulnerabilityExceptionUpdateCommentResponse XML object (API 1.2).
         """
-        return self.ExecuteAdvanced("VulnerabilityExceptionUpdateCommentRequest") # TODO
+        return self.ExecuteAdvanced("VulnerabilityExceptionUpdateCommentRequest")  # TODO
 
     def RequestVulnerabilityExceptionUpdateExpirationDate(self):
         """
         This function will return a single VulnerabilityExceptionUpdateExpirationDateResponse XML object (API 1.2).
         """
-        return self.ExecuteAdvanced("VulnerabilityExceptionUpdateExpirationDateRequest") # TODO
+        return self.ExecuteAdvanced("VulnerabilityExceptionUpdateExpirationDateRequest")  # TODO
 
 
 class NexposeSession(NexposeSession_APIv1d2):
@@ -1214,13 +1248,13 @@ class NexposeSession(NexposeSession_APIv1d2):
         while len(records) < record_count:
             filter_data['startIndex'] = len(records)
             json_data = json.loads(self.ExecuteFormPost(sub_url, filter_data))
-            records.extend(json_data.get('records', None)) # adding None to a list will crash, this is good :-)
+            records.extend(json_data.get('records', None))  # adding None to a list will crash, this is good :-)
 
         return records
 
     def ExecuteGetDynTable(self, sub_url, post_data=None):
         self._RequireAnOpenSession()
-        if post_data == None:
+        if post_data is None:
             # TODO: refactor the name ExecuteGet_JSON as a returned DynTable is in xml
             dyntable = as_xml(ExecuteGet_JSON(self._session_id, self._URI_root, sub_url, self.timeout))
             if dyntable.tag != 'DynTable':
@@ -1253,7 +1287,7 @@ class NexposeSession(NexposeSession_APIv1d2):
     def _RequireInstanceOf(self, object_to_test, required_class):
         if not isinstance(object_to_test, required_class):
             raise ValueError('input must be a ' + required_class.__name__ + ' instance')
-    
+
     def _GetStreamReader(self, sub_url):
         headers = CreateHeadersWithSessionCookie(self._session_id)
         response = OpenWebRequest(self._URI_root + sub_url, None, headers, self.timeout)
@@ -1279,7 +1313,7 @@ class NexposeSession(NexposeSession_APIv1d2):
             if message is None:
                 message = get_content_of(response, 'Failure/Exception/message')
             if message is None:
-                message = get_content_of(response, 'Error') # Used by unofficial API's (for example: TestAdminCredentialsResult)
+                message = get_content_of(response, 'Error')  # Used by unofficial API's (for example: TestAdminCredentialsResult)
             raise NexposeFailureException(message)
         return response
 
@@ -1302,7 +1336,8 @@ class NexposeSession(NexposeSession_APIv1d2):
         This function will return a single dl_nexpose.SiteConfiguration object using a SiteConfigRequest.
         Raises an exception on failure.
         """
-        if isinstance(site_or_id, SiteBase): site_or_id = site_or_id.id
+        if isinstance(site_or_id, SiteBase):
+            site_or_id = site_or_id.id
         response = self.VerifySuccess(self.RequestSiteConfig(site_or_id))
         element = get_element(response, 'Site')
         return SiteConfiguration.CreateFromXML(element)
@@ -1314,7 +1349,7 @@ class NexposeSession(NexposeSession_APIv1d2):
         To create a new site, specify -1 as id.
         """
         self._RequireInstanceOf(site_configuration, SiteConfiguration)
-        return self._ExecuteSave(self.RequestSiteSave, site_configuration, 'SiteSaveResponse', 'site-id') # TODO: if this turns out to be 'id' instead of 'site-id' than remove the parameter from the function
+        return self._ExecuteSave(self.RequestSiteSave, site_configuration, 'SiteSaveResponse', 'site-id')  # TODO: if this turns out to be 'id' instead of 'site-id' than remove the parameter from the function
 
     def StartSiteScan(self, site_or_id):
         """"
@@ -1322,7 +1357,8 @@ class NexposeSession(NexposeSession_APIv1d2):
         This function will return a tuple containing the Scan ID and the Engine ID using a SiteScanRequest.
         Raises an exception on failure.
         """
-        if isinstance(site_or_id, SiteBase): site_or_id = site_or_id.id
+        if isinstance(site_or_id, SiteBase):
+            site_or_id = site_or_id.id
         response = self.VerifySuccess(self.RequestSiteScan(site_or_id))
         element_scan = get_element(response, 'Scan')
         return int(get_attribute(element_scan, 'scan-id')), int(get_attribute(element_scan, 'engine-id'))
@@ -1333,7 +1369,8 @@ class NexposeSession(NexposeSession_APIv1d2):
         A site cannot be deleted if an associated scan is running or paused.
         Raises an exception on failure.
         """
-        if isinstance(site_or_id, SiteBase): site_or_id = site_or_id.id
+        if isinstance(site_or_id, SiteBase):
+            site_or_id = site_or_id.id
         self.VerifySuccess(self.RequestSiteDelete(site_or_id))
 
     def GetSiteScanSummaries(self, site_or_id):
@@ -1341,7 +1378,8 @@ class NexposeSession(NexposeSession_APIv1d2):
         Return all scan summaries (history) of a site.
         This function will generate dl_nexpose.ScanSummary objects using a SiteScanHistoryRequest.
         """
-        if isinstance(site_or_id, SiteBase): site_or_id = site_or_id.id
+        if isinstance(site_or_id, SiteBase):
+            site_or_id = site_or_id.id
         requestor = lambda: self.RequestSiteScanHistory(site_or_id)
         object_creator = ScanSummary.CreateFromXML
         return request_and_create_objects_from_xml(requestor, 'ScanSummary', object_creator)
@@ -1363,7 +1401,8 @@ class NexposeSession(NexposeSession_APIv1d2):
         If site_or_id is None then all assets for the Scan Engine, grouped by site-id are returned.
         This function will generate dl_nexpose.AssetSummary objects using a SiteDeviceListingRequest.
         """
-        if isinstance(site_or_id, SiteBase): site_or_id = site_or_id.id
+        if isinstance(site_or_id, SiteBase):
+            site_or_id = site_or_id.id
         requestor = lambda: self.RequestSiteDeviceListing(site_or_id)
         object_creator = lambda xml_data: AssetSummary.CreateFromXML(xml_data, site_id=xml_data.getparent().attrib['site-id'])
         return request_and_create_objects_from_xml(requestor, 'SiteDevices/device', object_creator)
@@ -1373,7 +1412,8 @@ class NexposeSession(NexposeSession_APIv1d2):
         Get detailed information of an asset.
         Requires the 2.1 API!
         """
-        if isinstance(asset_or_id, AssetBase): asset_or_id = asset_or_id.id
+        if isinstance(asset_or_id, AssetBase):
+            asset_or_id = asset_or_id.id
         sub_url = APIURL_ASSETS.format(asset_or_id)
         json_dict = self.ExecutePagedGet_v21(sub_url)
         load_urls(json_dict, self.ExecutePagedGet_v21)
@@ -1384,7 +1424,8 @@ class NexposeSession(NexposeSession_APIv1d2):
         Delete an asset (device).
         Raises an exception on failure.
         """
-        if isinstance(asset_or_id, AssetBase): asset_or_id = asset_or_id.id
+        if isinstance(asset_or_id, AssetBase):
+            asset_or_id = asset_or_id.id
         self.VerifySuccess(self.RequestDeviceDelete(asset_or_id))
 
     def GetFilteredAssets(self, filter_or_criteria_or_criterion):
@@ -1416,9 +1457,10 @@ class NexposeSession(NexposeSession_APIv1d2):
         Return the detailed configuration of an asset group.
         This function will return a dl_nexpose.AssetGroupConfiguration object using a AssetGroupConfigRequest.
         """
-        if isinstance(assetgroup_or_id, AssetGroupSummary): assetgroup_or_id = assetgroup_or_id.id
+        if isinstance(assetgroup_or_id, AssetGroupSummary):
+            assetgroup_or_id = assetgroup_or_id.id
         response = self.VerifySuccess(self.RequestAssetGroupConfig(assetgroup_or_id))
-        xml_data = get_element(response, 'AssetGroup')		
+        xml_data = get_element(response, 'AssetGroup')
         asset_group = AssetGroupConfiguration.CreateFromXML(xml_data)
 
         # fetch the description (with newline support) using the 2.0 API
@@ -1570,7 +1612,7 @@ class NexposeSession(NexposeSession_APIv1d2):
         config.has_access_to_all_sites = get_attribute(xml_data, 'allSites') == 'true'
         config.has_access_to_all_assetgroups = get_attribute(xml_data, 'allGroups') == 'true'
         config.accessible_sites = [int(get_attribute(xml_site, 'id')) for xml_site in xml_data.findall('Sites/site')]
-        config.accessible_assetgroups = [int(get_attribute(xml_assetgroup, 'id')) for xml_assetgroup in xml_data.findall('Groups/group')] # Groups/group or Groups/Group
+        config.accessible_assetgroups = [int(get_attribute(xml_assetgroup, 'id')) for xml_assetgroup in xml_data.findall('Groups/group')]  # Groups/group or Groups/Group
 
         return config
 
@@ -1608,7 +1650,7 @@ class NexposeSession(NexposeSession_APIv1d2):
         """
         Start updating the Security Console application and restart if necessary.
         Raises an exception on failure.
-        """		
+        """
         self.VerifySuccess(self.RequestStartUpdate())
 
     #
@@ -1768,7 +1810,7 @@ class NexposeSession(NexposeSession_APIv1d2):
         response = self.VerifySuccess(self.RequestTicketCreate(new_ticket.AsXML()))
         return int(get_attribute(response, 'id'))
 
-    def GetTicketSummaries(self, state_filter=None): # TODO: implement complete support for ticket filtering
+    def GetTicketSummaries(self, state_filter=None):  # TODO: implement complete support for ticket filtering
         """
         Return (all) ticket summaries.
         An optional state filter either takes a string or an iterable of dl_nexpose.TicketState values.
@@ -1801,7 +1843,6 @@ class NexposeSession(NexposeSession_APIv1d2):
         if isinstance(ticket_or_id, TicketSummary):
             ticket_or_id = ticket_or_id.id
         self.VerifySuccess(self.RequestTicketDelete(ticket_or_id))
-
 
     #
     # The following functions implement the Multi-Tenant User Management API:
@@ -1893,21 +1934,21 @@ class NexposeSession(NexposeSession_APIv1d2):
     #
     # The following functions implement the Report Management API:
     # ===========================================================
-    
+
     def _LocateReportOnServer(self, id):
         for config in self.GetReportConfigurationSummaries():
             for summary in self.GetReportHistory(config.id):
                 if summary.id == id:
                     return summary
-        return ReportSummary() # Return an empty object in case of failure
-    
+        return ReportSummary()  # Return an empty object in case of failure
+
     def _GetReportURI(self, report_or_id):
         if not isinstance(report_or_id, ReportConfigurationSummary):
             if not isinstance(report_or_id, ReportSummary):
                 report_or_id = self._LocateReportOnServer(report_or_id)
         sub_url = remove_front_slash(report_or_id.URI)
         if not sub_url:
-            sub_url = "reports/00000000/00000000/report.xml" # Assume this URI does not exist and force an error
+            sub_url = "reports/00000000/00000000/report.xml"  # Assume this URI does not exist and force an error
         return sub_url
 
     def GetReportConfigurationSummaries(self):
@@ -1932,7 +1973,7 @@ class NexposeSession(NexposeSession_APIv1d2):
             report_or_configuration_or_id = report_or_configuration_or_id.configuration_id
         response = self.VerifySuccess(self.RequestReportConfig(report_or_configuration_or_id))
         element = get_element(response, 'ReportConfig')
-        return ReportConfigurationSummary.CreateFromXML(element) # todo: THIS MUST BE A FULL CONFIGURATION
+        return ReportConfigurationSummary.CreateFromXML(element)  # TODO: THIS MUST BE A FULL CONFIGURATION
 
     def GetReportHistory(self, reportconfiguration_or_id):
         """
@@ -1954,7 +1995,7 @@ class NexposeSession(NexposeSession_APIv1d2):
         if isinstance(report_or_id, ReportSummary):
             report_or_id = report_or_id.id
         self.VerifySuccess(self.RequestReportDelete(report_or_id, None))
-    
+
     def DeleteReportConfiguration(self, report_or_configuration_or_id):
         """
         Delete the specified report configuration.
@@ -1965,7 +2006,7 @@ class NexposeSession(NexposeSession_APIv1d2):
         elif isinstance(report_or_configuration_or_id, ReportSummary):
             report_or_configuration_or_id = report_or_configuration_or_id.configuration_id
         self.VerifySuccess(self.RequestReportDelete(None, report_or_configuration_or_id))
-    
+
     def GenerateReport(self, report_or_configuration_or_id):
         """
         Generate a new report using the specified report configuration.
@@ -1985,7 +2026,7 @@ class NexposeSession(NexposeSession_APIv1d2):
         sub_url = self._GetReportURI(report_or_id)
         return self._GetStreamReader(sub_url)
 
-    def DownloadReport(self, report_or_id, callback_function=None, block_size=DEFAULT_BLOCK_SIZE):        
+    def DownloadReport(self, report_or_id, callback_function=None, block_size=DEFAULT_BLOCK_SIZE):
         """
         Download a report.
         The callback_function has the following signature:
@@ -1995,7 +2036,7 @@ class NexposeSession(NexposeSession_APIv1d2):
         reader = self.GetReportStreamReader(report_or_id)
         return DownloadFromStreamReader(reader, callback_function, block_size)
 
-    def GenerateScanReport(self, scan_or_id):        
+    def GenerateScanReport(self, scan_or_id):
         """
         Generate a report of a scan.
         """
@@ -2010,7 +2051,6 @@ class NexposeSession(NexposeSession_APIv1d2):
         assert data[0] == data[-1][:-2]
         body = ''.join(data[4:-1])
         return as_xml(base64.urlsafe_b64decode(body))
-
 
     #
     # The following functions implement the Role Management API:
@@ -2109,7 +2149,8 @@ class NexposeSession(NexposeSession_APIv1d2):
         Return detailed information about a specified vulnerability.
         This function will return a dl_nexpose.VulnerabilityDetail object
         """
-        if isinstance(vulnerability_or_id, VulnerabilitySummary): vulnerability_or_id = vulnerability_or_id.id
+        if isinstance(vulnerability_or_id, VulnerabilitySummary):
+            vulnerability_or_id = vulnerability_or_id.id
         response = self.VerifySuccess(self.RequestVulnerabilityDetails(vulnerability_or_id))
         element = get_element(response, 'Vulnerability')
         return VulnerabilityDetail.CreateFromXML(element)
@@ -2127,7 +2168,7 @@ class NexposeSession(NexposeSession_APIv1d2):
         object_creator = SiloVulnerabilityExceptionDetails.CreateFromXML
         return request_and_create_objects_from_xml(requestor, 'SiloVulnDetails', object_creator)
 
-    def GetVulnerabilityExceptions(self, state_filter=None): # TODO: implement complete support for vulnerability exception filtering
+    def GetVulnerabilityExceptions(self, state_filter=None):  # TODO: implement complete support for vulnerability exception filtering
         """
         Return all vulnerability exceptions.
         This function will generate dl_nexpose.VulnerabilityException objects using a VulnerabilityExceptionListingRequest.
@@ -2154,7 +2195,7 @@ class NexposeSession(NexposeSession_APIv1d2):
 
     def RecallVulnerabilityException(self, exception_or_id):
         """
-        Recall/delete the specified (under review) vulnerability exception.		
+        Recall/delete the specified (under review) vulnerability exception.
         Raises an exception on failure.
         """
         if isinstance(exception_or_id, VulnerabilityException):
@@ -2247,7 +2288,7 @@ class NexposeSession(NexposeSession_APIv1d2):
         pre_url = pre_url.format(*args)
         return self._SaveOrAddTagTo(tag_or_id, pre_url)
 
-    def _RemoveTagFrom(self, pre_url, tag_or_id, *args):	
+    def _RemoveTagFrom(self, pre_url, tag_or_id, *args):
         if args:
             pre_url = pre_url.format(*args)
         sub_url = pre_url + "tags/{0}".format(Tag.GetID(tag_or_id))
@@ -2289,7 +2330,8 @@ class NexposeSession(NexposeSession_APIv1d2):
         Get all the tags of a site as dl_nexpose.Tag objects.
         Requires the 2.0 API!
         """
-        if isinstance(site_or_id, SiteBase): site_or_id = site_or_id.id
+        if isinstance(site_or_id, SiteBase):
+            site_or_id = site_or_id.id
         return self._GetTagsOf(APIURL_SITES, site_or_id)
 
     def AddTagToSite(self, tag_or_id, site_or_id):
@@ -2297,15 +2339,17 @@ class NexposeSession(NexposeSession_APIv1d2):
         Add a tag to a site.
         Requires the 2.0 API!
         """
-        if isinstance(site_or_id, SiteBase): site_or_id = site_or_id.id
+        if isinstance(site_or_id, SiteBase):
+            site_or_id = site_or_id.id
         return self._AddTagTo(APIURL_SITES, tag_or_id, site_or_id)
 
-    def RemoveTagFromSite(self, tag_or_id, site_or_id):	
+    def RemoveTagFromSite(self, tag_or_id, site_or_id):
         """
         Remove a tag from a site.
         Requires the 2.0 API!
         """
-        if isinstance(site_or_id, SiteBase): site_or_id = site_or_id.id
+        if isinstance(site_or_id, SiteBase):
+            site_or_id = site_or_id.id
         return self._RemoveTagFrom(APIURL_SITES, tag_or_id, site_or_id)
 
     def GetAssetTags(self, asset_or_id):
@@ -2313,7 +2357,8 @@ class NexposeSession(NexposeSession_APIv1d2):
         Get all the tags of an asset group as dl_nexpose.Tag objects.
         Requires the 2.0 API!
         """
-        if isinstance(asset_or_id, AssetBase): asset_or_id = asset_or_id.id
+        if isinstance(asset_or_id, AssetBase):
+            asset_or_id = asset_or_id.id
         return self._GetTagsOf(APIURL_ASSETS, asset_or_id)
 
     def AddTagToAsset(self, tag_or_id, asset_or_id):
@@ -2321,15 +2366,17 @@ class NexposeSession(NexposeSession_APIv1d2):
         Add a tag to an asset.
         Requires the 2.0 API!
         """
-        if isinstance(asset_or_id, AssetBase): asset_or_id = asset_or_id.id
+        if isinstance(asset_or_id, AssetBase):
+            asset_or_id = asset_or_id.id
         return self._AddTagTo(APIURL_ASSETS, tag_or_id, asset_or_id)
 
-    def RemoveTagFromAsset(self, tag_or_id, asset_or_id):	
+    def RemoveTagFromAsset(self, tag_or_id, asset_or_id):
         """
         Remove a tag from an asset.
         Requires the 2.0 API!
         """
-        if isinstance(asset_or_id, AssetBase): asset_or_id = asset_or_id.id
+        if isinstance(asset_or_id, AssetBase):
+            asset_or_id = asset_or_id.id
         return self._RemoveTagFrom(APIURL_ASSETS, tag_or_id, asset_or_id)
 
     def GetAssetGroupTags(self, assetgroup_or_id):
@@ -2337,7 +2384,8 @@ class NexposeSession(NexposeSession_APIv1d2):
         Get all the tags of an asset group as dl_nexpose.Tag objects.
         Requires the 2.0 API!
         """
-        if isinstance(assetgroup_or_id, AssetGroupSummary): assetgroup_or_id = assetgroup_or_id.id
+        if isinstance(assetgroup_or_id, AssetGroupSummary):
+            assetgroup_or_id = assetgroup_or_id.id
         return self._GetTagsOf(APIURL_ASSETGROUPS, assetgroup_or_id)
 
     def AddTagToAssetGroup(self, tag_or_id, assetgroup_or_id):
@@ -2345,7 +2393,8 @@ class NexposeSession(NexposeSession_APIv1d2):
         Add a tag to an asset group.
         Requires the 2.0 API!
         """
-        if isinstance(assetgroup_or_id, AssetGroupSummary): assetgroup_or_id = assetgroup_or_id.id
+        if isinstance(assetgroup_or_id, AssetGroupSummary):
+            assetgroup_or_id = assetgroup_or_id.id
         return self._AddTagTo(APIURL_ASSETGROUPS, tag_or_id, assetgroup_or_id)
 
     def RemoveTagFromAssetGroup(self, tag_or_id, assetgroup_or_id):
@@ -2353,7 +2402,8 @@ class NexposeSession(NexposeSession_APIv1d2):
         Remove a tag from an asset group.
         Requires the 2.0 API!
         """
-        if isinstance(assetgroup_or_id, AssetGroupSummary): assetgroup_or_id = assetgroup_or_id.id
+        if isinstance(assetgroup_or_id, AssetGroupSummary):
+            assetgroup_or_id = assetgroup_or_id.id
         return self._RemoveTagFrom(APIURL_ASSETGROUPS, tag_or_id, assetgroup_or_id)
 
     #
@@ -2363,7 +2413,7 @@ class NexposeSession(NexposeSession_APIv1d2):
     def TestCredential(self, credential, target_host, target_port=0, engine_or_id=0, site_or_id=0):
         """
         Test a credential (dl_nexpose.Credential derived object) against the specified host.
-        If no target_port is specified then the default port of the credential object is used.		
+        If no target_port is specified then the default port of the credential object is used.
         If no scan engine is specified then the local scan engine will be queried and used.
         The site (or id) is optional.
         Returns true is the credential was valid, invalid credentials result in an exception.
