@@ -1,4 +1,11 @@
+from __future__ import unicode_literals
+from __future__ import print_function
+from __future__ import division
+from __future__ import absolute_import
 # SOURCE: http://stackoverflow.com/questions/11772847/error-urlopen-error-errno-8-ssl-c504-eof-occurred-in-violation-of-protoco
+from future import standard_library
+standard_library.install_aliases()
+from builtins import *
 import ssl
 from functools import wraps
 
