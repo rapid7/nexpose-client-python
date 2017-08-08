@@ -77,6 +77,7 @@ class SiteConfiguration(SiteBase):
         config.description = get_content_of(xml_data, 'Description', config.description)
         config.is_dynamic = get_attribute(xml_data, 'isDynamic', config.is_dynamic) in ['1', 'true', True]
         config.hosts = [_host_to_object(host) for host in get_children_of(xml_data, 'Hosts')]
+        config.alerting = [alert for alert in get_children_of(xml_data, 'Alerting')]
 
         #Use scanconfig elements for the SiteConfiguration
         scanconfig = get_element(xml_data, "ScanConfig")
@@ -106,7 +107,7 @@ class SiteConfiguration(SiteBase):
         self.is_dynamic = False
         self.hosts = []
         self.credentials = []  # TODO
-        self.alerting = []  # TODO
+        self.alerting = []
         self.scan_configuration = []  # TODO
         self.configid = self.id
         self.configtemplateid = "full-audit-without-web-spider"
@@ -139,6 +140,11 @@ class SiteConfiguration(SiteBase):
 
         xml_alerting = create_element('Alerting')
         xml_data.append(xml_alerting)
+
+        xml_alerts = create_element('Alerting')
+        for alert in self.alerting:
+            xml_alerts.append(alert)
+        xml_data.append(xml_alerts)
 
         #Include ScanConfig attributes
         attributes = {}
