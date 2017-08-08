@@ -1,10 +1,16 @@
+# Future Imports for py2/3 backwards compat.
+from __future__ import (absolute_import, division, print_function,
+                        unicode_literals)
+from builtins import object
 from json_utils import get_id as _get_id, HasID, JSON
+from future import standard_library
+standard_library.install_aliases()
 
 DEFAULT_SOURCENAME = "DavinsiLabs-Nexpose-Python"
 DEFAULT_TAGCOLOR = "#f6f6f6"
 
 
-class TagColors:
+class TagColors(object):
     DEFAULT = DEFAULT_TAGCOLOR
     BLUE = "#496a77"
     GREEN = "#7d8a58"

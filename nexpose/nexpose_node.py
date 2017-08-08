@@ -1,7 +1,12 @@
-from xml_utils import get_attribute
+# Future Imports for py2/3 backwards compat.
+from __future__ import (absolute_import, division, print_function,
+                        unicode_literals)
+from builtins import object
+from future import standard_library
+standard_library.install_aliases()
 
 
-class AssetHostTypes:
+class AssetHostTypes(object):
     Empty = ''
     Guest = 'GUEST'
     Hypervisor = 'HYPERVISOR'
@@ -9,7 +14,7 @@ class AssetHostTypes:
     Mobile = 'MOBILE'
 
 
-class NodeScanStatus:
+class NodeScanStatus(object):
     UNKNOWN = ''
     COMPLETE = 'C'
 
@@ -21,7 +26,7 @@ class NodeScanStatus:
 # scanEngineName
 # scanStatusTranslation
 # vulnerabilityCount
-class NodeBase:
+class NodeBase(object):
     def InitializeFromJSON(self, json_dict):
         self.id = json_dict['nodeID']
         self.asset_id = json_dict['assetID']

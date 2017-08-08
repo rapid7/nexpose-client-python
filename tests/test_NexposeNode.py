@@ -1,8 +1,12 @@
-from load_unittest import unittest
-from LoadFixture import LoadFixture, JSON
+# Future Imports for py2/3 backwards compat.
+from __future__ import (absolute_import, division, print_function,
+                        unicode_literals)
+from .load_unittest import unittest
+from .LoadFixture import LoadFixture, JSON
 from .context import nexpose
 from nexpose import Node
-
+from future import standard_library
+standard_library.install_aliases()
 
 class NexposeNodeTestCase(unittest.TestCase):
     def testCreateFromJSON(self):

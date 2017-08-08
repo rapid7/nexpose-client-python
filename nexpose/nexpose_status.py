@@ -1,4 +1,12 @@
-class NexposeStatus:
+# Future Imports for py2/3 backwards compat.
+from __future__ import (absolute_import, division, print_function,
+                        unicode_literals)
+from builtins import object
+from future import standard_library
+standard_library.install_aliases()
+
+
+class NexposeStatus(object):
     STARTING = 'starting'
     NORMAL_MODE = 'normal_mode'
     MAINTENANCE_MODE = 'maintenance_mode'

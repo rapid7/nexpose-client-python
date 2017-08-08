@@ -1,7 +1,13 @@
+# Future Imports for py2/3 backwards compat.
+from __future__ import (absolute_import, division, print_function,
+                        unicode_literals)
+from builtins import object
 from xml_utils import get_attribute, get_content_of, get_children_of, create_element, as_string, as_xml, get_element
+from future import standard_library
+standard_library.install_aliases()
 
 
-class Range:
+class Range(object):
     def __init__(self, start, end):
         self.start = start
         self.end = end if end else start
@@ -15,7 +21,7 @@ class Range:
         return xml_data
 
 
-class Host:
+class Host(object):
     def __init__(self, name):
         self.name = name
 
@@ -33,7 +39,7 @@ def _host_to_object(host):
     raise ValueError('Unknown host type: {0}'.format(host.tag))
 
 
-class ScanConfiguration:
+class ScanConfiguration(object):
     def __init__(self):
         self.id = 0
         self.name = ''
@@ -42,7 +48,7 @@ class ScanConfiguration:
         self.engine_id = 0
 
 
-class SiteBase:
+class SiteBase(object):
     def InitalizeFromXML(self, xml_data):
         self.id = int(get_attribute(xml_data, 'id', self.id))
         self.name = get_attribute(xml_data, 'name', self.name)
@@ -154,5 +160,5 @@ class SiteConfiguration(SiteBase):
         xml_data.append(xml_scanconfig)
 
         #TODO: implement the xxxPrivileges
-        print as_string(as_xml(as_string(xml_data)))
+        print(as_string(as_xml(as_string(xml_data))))
         return xml_data

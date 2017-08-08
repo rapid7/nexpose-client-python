@@ -1,14 +1,19 @@
-﻿from nexpose import OpenNexposeSession, NexposeTag, as_string
-import json
+﻿# Future Imports for py2/3 backwards compat.
+from __future__ import (absolute_import, division, print_function,
+                        unicode_literals)
+from builtins import range
+from nexpose import OpenNexposeSession, as_string
+from future import standard_library
+import http.client
+standard_library.install_aliases()
 
 
 def output(response):
-    print as_string(response)
+    print(as_string(response))
 
 
-import httplib
-httplib.HTTPConnection._http_vsn = 10
-httplib.HTTPConnection._http_vsn_str = 'HTTP/1.0'
+http.client.HTTPConnection._http_vsn = 10
+http.client.HTTPConnection._http_vsn_str = 'HTTP/1.0'
 
 
 host = "localhost"
@@ -21,9 +26,9 @@ session = OpenNexposeSession(host, port, username, password)
 tags = session.RequestTagListing()[-1:]
 for tag in tags:
     l_id = tag.id
-    print tag.id, tag.name.encode('ascii', 'xmlcharrefreplace')
+    print(tag.id, tag.name.encode('ascii', 'xmlcharrefreplace'))
     for attr in tag.attributes:
-        print "  ", attr.id, attr.name, attr.value
+        print("  ", attr.id, attr.name, attr.value)
     assert tag.name == u"ÇçĞğİıÖöŞşÜü"
 
 sites = session.RequestSiteListing()
@@ -38,9 +43,9 @@ for site_id in range(1, 1 + 1):  # sites.xpath("/SiteListingResponse/SiteSummary
     #tag.name += "?"
     #tag.id = None
     #print tag.as_json()
-    print session.RemoveTagFromSite(l_id, site_id)
-    print session.AddTagToSite(l_id, site_id)
+    print(session.RemoveTagFromSite(l_id, site_id))
+    print(session.AddTagToSite(l_id, site_id))
 #output(session.RequestSystemInformation())
 
 for tag in session.RequestAssetTagListing(2):
-    print tag.id, tag.name.encode('ascii', 'xmlcharrefreplace')
+    print(tag.id, tag.name.encode('ascii', 'xmlcharrefreplace'))

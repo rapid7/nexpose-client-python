@@ -1,26 +1,21 @@
 #!/usr/bin/env python
+# Future Imports for py2/3 backwards compat.
+from __future__ import (absolute_import, division, print_function,
+                        unicode_literals)
 
-from __future__ import unicode_literals
-from __future__ import print_function
-from __future__ import division
-from __future__ import absolute_import
 from builtins import map
-from future import standard_library
-standard_library.install_aliases()
 from builtins import input
 from builtins import range
-from builtins import *
 from fix_path import make_dlnexpose_importable
-make_dlnexpose_importable()
-
-
 from time import sleep
-
 from io import BytesIO
 from zipfile import ZipFile
-
 import sslfix
 import nexpose as nexpose
+from future import standard_library
+standard_library.install_aliases()
+make_dlnexpose_importable()
+
 as_string = nexpose.as_string  # for testing only
 
 

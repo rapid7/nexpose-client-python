@@ -1,11 +1,16 @@
+# Future Imports for py2/3 backwards compat.
+from __future__ import (absolute_import, division, print_function,
+                        unicode_literals)
 from lxml import etree
-from StringIO import StringIO
+from io import StringIO
+from future import standard_library
+standard_library.install_aliases()
 
 
 def create_element(tag, optional_attributes=None):
     request = etree.Element(tag)
     if optional_attributes:
-        for tag, value in optional_attributes.iteritems():
+        for tag, value in optional_attributes.items():
             request.attrib[tag] = "{0}".format(value)
     return request
 

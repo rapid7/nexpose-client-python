@@ -1,13 +1,19 @@
+# Future Imports for py2/3 backwards compat.
+from __future__ import (absolute_import, division, print_function,
+                        unicode_literals)
+from builtins import object
 from xml_utils import get_attribute, create_element
-from urlparse import urlparse
+from urllib.parse import urlparse
+from future import standard_library
+standard_library.install_aliases()
 
 
-class DiscoveryConnectionProtocol:
+class DiscoveryConnectionProtocol(object):
     HTTP = 'http'
     HTTPS = 'https'
 
 
-class _DiscoveryConnectionBase:
+class _DiscoveryConnectionBase(object):
     def InitalizeFromXML(self, xml_data):
         self.id = int(get_attribute(xml_data, 'id', self.id))
         self.name = get_attribute(xml_data, 'name', self.name)

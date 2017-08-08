@@ -1,6 +1,10 @@
-import urllib, urllib2
+# Future Imports for py2/3 backwards compat.
+from __future__ import (absolute_import, division, print_function,
+                        unicode_literals)
+from builtins import object
+import urllib.request, urllib.parse, urllib.error, urllib.request, urllib.error, urllib.parse
 import base64
-from itertools import imap
+
 
 import json
 from json_utils import load_urls
@@ -35,18 +39,20 @@ from nexpose_userauthenticator import UserAuthenticatorSummary
 from nexpose_vulnerability import VulnerabilityReference, VulnerabilitySummary, VulnerabilityDetail
 from nexpose_vulnerabilityexception import VulnerabilityExceptionStatus, VulnerabilityExceptionReason, VulnerabilityExceptionScope, SiloVulnerabilityExceptionDetails, VulnerabilityException
 import nexpose_criteria as Criteria
+from future import standard_library
+standard_library.install_aliases()
 
 DEFAULT_BLOCK_SIZE = 32768
 
 
 def OpenWebRequest(uri, post_data, headers, timeout, get_method=None):
-    request = urllib2.Request(uri, post_data, headers)
+    request = urllib.request.Request(uri, post_data, headers)
     if get_method:
         request.get_method = get_method
     if timeout == 0:
-        response = urllib2.urlopen(request)
+        response = urllib.request.urlopen(request)
     else:
-        response = urllib2.urlopen(request, timeout=timeout)
+        response = urllib.request.urlopen(request, timeout=timeout)
     return response
 
 
@@ -82,7 +88,7 @@ def CreateHeadersWithSessionCookieAndCustomHeader(session_id):
 def ExecuteGet_JSON(session_id, uri, sub_url, timeout, options=None):
     if options is None:
         options = {}
-    options = map(lambda a: "{0}={1}".format(a[0], a[1]), options.iteritems())
+    options = ["{0}={1}".format(a[0], a[1]) for a in iter(options.items())]
     headers = CreateHeadersWithSessionCookie(session_id)
     #headers["Accept-Encoding"] = "utf-8"
     if sub_url.startswith('http'):  # TODO: refactor uri & sub_url so that json_utils.resolve_urls can work better
@@ -100,7 +106,7 @@ def ExecuteWithPostData_FORM(session_id, uri, sub_url, timeout, post_data):
         post_data = as_string(post_data)
     else:
         headers["Content-Type"] = "application/x-www-form-urlencoded; charset=UTF-8"
-        post_data = urllib.urlencode(utf8_encoded(post_data))
+        post_data = urllib.parse.urlencode(utf8_encoded(post_data))
     return ExecuteWebRequest(uri + sub_url, post_data, headers, timeout, lambda: 'POST')
 
 
@@ -126,13 +132,13 @@ def ExecuteDelete_JSON(session_id, uri, sub_url, timeout):
     uri = uri + sub_url
     try:
         ExecuteWebRequest(uri, None, headers, timeout, lambda: 'DELETE')
-    except urllib2.HTTPError as e:
+    except urllib.error.HTTPError as e:
         if e.code == 410:
             return True
         raise e
     try:
         ExecuteGet_JSON(session_id, uri, sub_url, timeout)
-    except urllib2.HTTPError as e:
+    except urllib.error.HTTPError as e:
         if e.code == 404:
             return True
         raise e
@@ -181,7 +187,7 @@ def BuildURI_APIv2d1(host, port=None):
 
 
 def create_objects_from_xml(elements, object_creator):
-    return imap(object_creator, elements)
+    return map(object_creator, elements)
 
 
 def request_and_create_objects_from_xml(requestor, xpath, object_creator):
@@ -257,13 +263,13 @@ class NexposeFailureException(NexposeException):
         super(NexposeFailureException, self).__init__(message)
 
 
-class DynTableColumn:
+class DynTableColumn(object):
     def __init__(self, name, type):
         self.name = name
         self.type = type
 
 
-class NexposeSessionBase:
+class NexposeSessionBase(object):
     def __init__(self, host, port):
         self._URI_root = BuildURI_root(host, port)
         self._URI_APIv2d0 = BuildURI_APIv2d0(host, port)
@@ -1433,7 +1439,7 @@ class NexposeSession(NexposeSession_APIv1d2):
         if not isinstance(filter_or_criteria_or_criterion, AssetFilter):
             filter_or_criteria_or_criterion = AssetFilter(filter_or_criteria_or_criterion)
         result = self.ExecuteGetRecords('data/asset/filterAssets', filter_or_criteria_or_criterion)
-        return imap(FilteredAsset.CreateFromJSON, result)
+        return map(FilteredAsset.CreateFromJSON, result)
 
     #
     # The following functions implement the Asset Group Management API:
@@ -1817,7 +1823,7 @@ class NexposeSession(NexposeSession_APIv1d2):
         tickets = request_and_create_objects_from_xml(requestor, 'TicketSummary', object_creator)
         if not state_filter:
             return tickets
-        return filter(lambda ticket: ticket.state in state_filter, tickets)
+        return [ticket for ticket in tickets if ticket.state in state_filter]
 
     def GetTicketDetails(self, ticket_or_id):
         """
@@ -2248,7 +2254,7 @@ class NexposeSession(NexposeSession_APIv1d2):
         json_dict = self.ExecutePagedGet_v20(pre_url + "tags")
         resources = json_dict.get("resources", None)
         if resources:
-            return imap(Tag.CreateFromJSON, resources)
+            return map(Tag.CreateFromJSON, resources)
         return []
 
     def _AddIdTo(self, id_field_name, id, pre_url, sub_url):
@@ -2467,7 +2473,7 @@ class NexposeSession(NexposeSession_APIv1d2):
         filter_data = {'dir': '-1', 'sort': '-1', 'table-id': 'credential-listing'}
         data = self.ExecuteGetRecords('data/credential/shared/listing', filter_data)
         #print data
-        return imap(SharedCredentialSummary.CreateFromJSON, data)
+        return map(SharedCredentialSummary.CreateFromJSON, data)
 
     def GetSharedCredentialConfiguration(self, id_or_shared_credential):
         if isinstance(id_or_shared_credential, SharedCredentialBase):
@@ -2480,12 +2486,12 @@ class NexposeSession(NexposeSession_APIv1d2):
         assert isinstance(shared_credential, SharedCredentialConfiguration)
 
         if shared_credential.id == -1:
-            old_ids = set(imap(lambda summary: summary.id, self.GetSharedCredentialSummaries()))
+            old_ids = set(map(lambda summary: summary.id, self.GetSharedCredentialSummaries()))
         xml = shared_credential.AsXML()
         #print as_string(xml)
         response = as_xml(self.ExecuteFormPost('data/credential/shared/save', xml))
         if shared_credential.id == -1:
-            new_ids = set(imap(lambda summary: summary.id, self.GetSharedCredentialSummaries()))
+            new_ids = set(map(lambda summary: summary.id, self.GetSharedCredentialSummaries()))
 
         if shared_credential.id == -1:
             diff_ids = new_ids.difference(old_ids)
@@ -2506,7 +2512,7 @@ class NexposeSession(NexposeSession_APIv1d2):
             if isinstance(id_or_shared_credential, SharedCredentialBase):
                 id_or_shared_credential = id_or_shared_credential.id
             return self.ExecuteFormPost('data/credential/shared/delete?credid={0}'.format(id_or_shared_credential), '') == 'true'
-        except urllib2.HTTPError:
+        except urllib.error.HTTPError:
             return False
 
     #
@@ -2522,7 +2528,7 @@ class NexposeSession(NexposeSession_APIv1d2):
         # Uncomment this if you need to support older Nexpose Servers:
         # columns, data = self.ExecuteGetDynTable('admin/global/ajax/backup_listing.txml')
         columns, data = self.ExecuteGetDynTable('data/admin/backups?printDocType=0&tableID=BackupSynopsis')
-        return imap(Backup.CreateFromJSON, data)
+        return map(Backup.CreateFromJSON, data)
 
     def CreateBackup(self, platform_independent=False, description=None):
         """

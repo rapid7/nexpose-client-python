@@ -1,7 +1,13 @@
+# Future Imports for py2/3 backwards compat.
+from __future__ import (absolute_import, division, print_function,
+                        unicode_literals)
 # Auto-created by 'create_credential_code.py'
+from builtins import object
 from xml_utils import create_element, get_content_of
 from python_utils import is_subclass_of
 import sys
+from future import standard_library
+standard_library.install_aliases()
 
 
 def GetSupportedCredentials():
@@ -12,7 +18,7 @@ def GetSupportedCredentials():
             yield credential
 
 
-class Credential:
+class Credential(object):
     SERVICE_TYPE = None
     DEFAULT_PORT = 0
 
@@ -662,7 +668,7 @@ class Credential_SNMPV3(Credential):
         return xml
 
 
-class PrivilegeElevationType:
+class PrivilegeElevationType(object):
     NONE = 'NONE'  # none
     SUDO = 'SUDO'  # sudo
     SUDOSU = 'SUDOSU'  # sudo+su

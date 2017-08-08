@@ -1,9 +1,17 @@
-class AssetGroupPrivileges:
+# Future Imports for py2/3 backwards compat.
+from __future__ import (absolute_import, division, print_function,
+                        unicode_literals)
+from builtins import object
+from future import standard_library
+standard_library.install_aliases()
+
+
+class AssetGroupPrivileges(object):
     ConfigureAssets = 'ConfigureAssets'
     ConfigureAssets = 'ViewAssetData'
 
 
-class GlobalPrivileges:
+class GlobalPrivileges(object):
     AddUsersToGroup = 'AddUsersToGroup'
     AddUsersToReport = 'AddUsersToReport'
     AddUsersToSite = 'AddUsersToSite'
@@ -29,7 +37,7 @@ class GlobalPrivileges:
     TicketAssignee = 'TicketAssignee'
 
 
-class SitePrivileges:
+class SitePrivileges(object):
     ConfigureAlerts = 'ConfigureAlerts'
     ConfigureCredentials = 'ConfigureCredentials'
     ConfigureEngines = 'ConfigureEngines'

@@ -1,12 +1,19 @@
+# Future Imports for py2/3 backwards compat.
+from __future__ import (absolute_import, division, print_function,
+                        unicode_literals)
+from builtins import range
+from builtins import object
 from nexpose_criteria_operators import *
 from nexpose_criteria_constants import *
+from future import standard_library
+standard_library.install_aliases()
 
 
 def xrange_inclusive(start, included_stop):
-    return xrange(start, included_stop + 1)
+    return range(start, included_stop + 1)
 
 
-class NexposeCriteriaField:
+class NexposeCriteriaField(object):
     _Code = None
     ValidOperators = []  # Note: this list shouldn't be empty
     ValidValues = None  # None indicates that any value is accepted

@@ -1,7 +1,13 @@
+# Future Imports for py2/3 backwards compat.
+from __future__ import (absolute_import, division, print_function,
+                        unicode_literals)
+from builtins import object
 from xml_utils import get_attribute, create_element
+from future import standard_library
+standard_library.install_aliases()
 
 
-class EnginePriority:
+class EnginePriority(object):
     VeryLow = 'very-low'
     Low = 'low'
     Normal = 'normal'
@@ -9,7 +15,7 @@ class EnginePriority:
     VeryHigh = 'very high'
 
 
-class EngineStatus:
+class EngineStatus(object):
     Active = 'active'
     PendingAuthorization = 'pending-authorization'
     Incompatible = 'incompatible'
@@ -17,7 +23,7 @@ class EngineStatus:
     Unknown = 'unknown'
 
 
-class EngineBase:
+class EngineBase(object):
     def InitalizeFromXML(self, xml_data):
         self.id = int(get_attribute(xml_data, 'id', self.id))
         self.name = get_attribute(xml_data, 'name', self.name)

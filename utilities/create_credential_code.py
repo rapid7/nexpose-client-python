@@ -1,4 +1,9 @@
+# Future Imports for py2/3 backwards compat.
+from __future__ import (absolute_import, division, print_function,
+                        unicode_literals)
 from os import path
+from future import standard_library
+standard_library.install_aliases()
 
 # Mapping of Common Service Ports.
 DEFAULT_SERVICE_PORTS = {
@@ -534,92 +539,92 @@ def KeyToName(key):
 
 services = data['nexpose']['services']
 
-print "# Auto-created by '{0}'".format(path.basename(__file__))
-print "from xml_utils import create_element, get_content_of"
-print "from python_utils import is_subclass_of"
-print "import sys"
-print
-print "def GetSupportedCredentials():"
-print "    this_module = sys.modules[__name__]"
-print "    credentials = [this_module.__dict__[name] for name in dir(this_module) if is_subclass_of(this_module.__dict__[name], Credential)]"
-print "    for credential in credentials:"
-print "        if credential.SERVICE_TYPE:"
-print "            yield credential"
-print
-print "class Credential:"
-print "    SERVICE_TYPE = None"
-print "    DEFAULT_PORT = 0"
-print ""
-print "    # NOTE: factory method in a base class (not so-clean)"
-print "    @staticmethod"
-print "    def CreateFromXML(xml, service_type):"
-print "        for credential in GetSupportedCredentials():"
-print "            if service_type == credential.SERVICE_TYPE:"
-print "                return credential.CreateFromXML(xml)"
-print "        return None # TODO: raise exception"
-print ""
-print "    @staticmethod"
-print "    def CreateFromType(service_type):"
-print "        for credential in GetSupportedCredentials():"
-print "            if service_type == credential.SERVICE_TYPE:"
-print "                return credential.Create()"
-print "        return None # TODO: raise exception"
+print("# Auto-created by '{0}'".format(path.basename(__file__)))
+print("from xml_utils import create_element, get_content_of")
+print("from python_utils import is_subclass_of")
+print("import sys")
+print()
+print("def GetSupportedCredentials():")
+print("    this_module = sys.modules[__name__]")
+print("    credentials = [this_module.__dict__[name] for name in dir(this_module) if is_subclass_of(this_module.__dict__[name], Credential)]")
+print("    for credential in credentials:")
+print("        if credential.SERVICE_TYPE:")
+print("            yield credential")
+print()
+print("class Credential:")
+print("    SERVICE_TYPE = None")
+print("    DEFAULT_PORT = 0")
+print("")
+print("    # NOTE: factory method in a base class (not so-clean)")
+print("    @staticmethod")
+print("    def CreateFromXML(xml, service_type):")
+print("        for credential in GetSupportedCredentials():")
+print("            if service_type == credential.SERVICE_TYPE:")
+print("                return credential.CreateFromXML(xml)")
+print("        return None # TODO: raise exception")
+print("")
+print("    @staticmethod")
+print("    def CreateFromType(service_type):")
+print("        for credential in GetSupportedCredentials():")
+print("            if service_type == credential.SERVICE_TYPE:")
+print("                return credential.Create()")
+print("        return None # TODO: raise exception")
 
-print
+print()
 
-print "def _create_field(key, value):"
-print "    field = create_element('Field', {'name': key})"
-print "    field.text = value"
-print "    return field"
+print("def _create_field(key, value):")
+print("    field = create_element('Field', {'name': key})")
+print("    field.text = value")
+print("    return field")
 
-print
+print()
 
-print "def _create_field_and_append(xml, key, value):"
-print "    xml.append(_create_field(key, value))"
+print("def _create_field_and_append(xml, key, value):")
+print("    xml.append(_create_field(key, value))")
 
-print
+print()
 
 ssh_type = None
 for service in services:
-    print "class Credential_{0}(Credential):".format(Capitalize(service))
-    print "    SERVICE_TYPE = '{0}'".format(service)
-    print "    DEFAULT_PORT = {0}".format(DEFAULT_SERVICE_PORTS.get(service, 0))
-    print ""
-    print "    @staticmethod"
-    print "    def CreateFromXML(xml):"
-    print "        credential = Credential_{0}()".format(Capitalize(service))
+    print("class Credential_{0}(Credential):".format(Capitalize(service)))
+    print("    SERVICE_TYPE = '{0}'".format(service))
+    print("    DEFAULT_PORT = {0}".format(DEFAULT_SERVICE_PORTS.get(service, 0)))
+    print("")
+    print("    @staticmethod")
+    print("    def CreateFromXML(xml):")
+    print("        credential = Credential_{0}()".format(Capitalize(service)))
     for field in services[service]['fields']:
         key = field['key']
         name = KeyToName(key)
-        print "        credential.{0} = get_content_of(xml, \"Field/[@name='{1}']\", credential.{0})".format(name, key)
-    print "        return credential"
-    print ""
-    print "    @staticmethod"
-    print "    def Create():"
-    print "        credential = Credential_{0}()".format(Capitalize(service))
-    print "        credential.id = -1"
-    print "        return credential"
-    print ""
-    print "    def __init__(self):"
+        print("        credential.{0} = get_content_of(xml, \"Field/[@name='{1}']\", credential.{0})".format(name, key))
+    print("        return credential")
+    print("")
+    print("    @staticmethod")
+    print("    def Create():")
+    print("        credential = Credential_{0}()".format(Capitalize(service)))
+    print("        credential.id = -1")
+    print("        return credential")
+    print("")
+    print("    def __init__(self):")
     for field in services[service]['fields']:
         key = field['key']
         name = KeyToName(key)
         default_value = "PrivilegeElevationType.NONE" if name == 'privilege_elevation_type' else "''"
-        print "        self.{0} = {1}".format(name, default_value)
-    print ""
-    print "    def AsXML(self):"
-    print "        xml = create_element('Account', {'type': 'nexpose'})"
+        print("        self.{0} = {1}".format(name, default_value))
+    print("")
+    print("    def AsXML(self):")
+    print("        xml = create_element('Account', {'type': 'nexpose'})")
     for field in services[service]['fields']:
         key = field['key']
         name = KeyToName(key)
-        print "        _create_field_and_append(xml, '{0}', self.{1})".format(key, name)
-    print "        return xml"
+        print("        _create_field_and_append(xml, '{0}', self.{1})".format(key, name))
+    print("        return xml")
     if not ssh_type:
         ssh_type = services[service].get('privilegeelevationtypes', None)
-    print
+    print()
 
 if ssh_type:
-    print "class PrivilegeElevationType:"
+    print("class PrivilegeElevationType:")
     for key_text_pair in ssh_type:
         key, text = key_text_pair.popitem()
-        print "    {0} = '{1}' # {2}".format(key, key, text)
+        print("    {0} = '{1}' # {2}".format(key, key, text))

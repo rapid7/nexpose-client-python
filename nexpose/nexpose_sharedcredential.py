@@ -1,5 +1,11 @@
+# Future Imports for py2/3 backwards compat.
+from __future__ import (absolute_import, division, print_function,
+                        unicode_literals)
+from builtins import object
 from xml_utils import get_attribute, get_content_of, get_element, get_children_of, create_element
 from nexpose_credential import Credential
+from future import standard_library
+standard_library.install_aliases()
 
 """
       sites = xml.add_element('Sites')
@@ -22,7 +28,7 @@ from nexpose_credential import Credential
 """
 
 
-class SharedCredentialBase:
+class SharedCredentialBase(object):
     def __init__(self):
         self.id = 0
         self.name = ''
