@@ -139,12 +139,9 @@ class SiteConfiguration(SiteBase):
         xml_data.append(xml_credentials)
 
         xml_alerting = create_element('Alerting')
-        xml_data.append(xml_alerting)
-
-        xml_alerts = create_element('Alerting')
         for alert in self.alerting:
             xml_alerts.append(alert)
-        xml_data.append(xml_alerts)
+        xml_data.append(xml_alerting)
 
         #Include ScanConfig attributes
         attributes = {}
