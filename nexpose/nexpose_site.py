@@ -86,6 +86,8 @@ class SiteConfiguration(SiteBase):
         config.configversion = scanconfig.get("configVersion")
         config.configengineid = scanconfig.get("engineID")
 
+        config.schedules = get_children_of(scanconfig, "Schedules")
+
         return config
 
     @staticmethod
@@ -113,6 +115,7 @@ class SiteConfiguration(SiteBase):
         self.configname = "Full audit without Web Spider"
         self.configversion = 3
         self.configengineid = 3
+        self.schedules = []
 
     def AsXML(self, exclude_id):
         attributes = {}
@@ -150,6 +153,8 @@ class SiteConfiguration(SiteBase):
 
         xml_scanconfig = create_element('ScanConfig', attributes)
         xml_scheduling = create_element('Scheduling')
+        for sched in self.schedules:
+            xml_scheduling.append(sched)
         xml_scanconfig.append(xml_scheduling)
         xml_data.append(xml_scanconfig)
 
