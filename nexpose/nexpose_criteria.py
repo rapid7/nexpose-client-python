@@ -30,7 +30,7 @@ def GetFieldNames():
 def GetFieldByName(name):
     """Gets a field (object) by name.
        Raises a LookupError if no field with the specified name exists."""
-    if not name in GetFieldNames():
+    if name not in GetFieldNames():
         raise LookupError("Criteria Field with name {0} not found!".format(name))
     return _get_by_name(name)
 
@@ -48,7 +48,7 @@ def GetOperatorCodes():
 def GetOperatorByCode(code):
     """Gets a operator (object) by code.
        Raises a LookupError if no field with the specified code exists."""
-    if not code in GetOperatorCodes():
+    if code not in GetOperatorCodes():
         raise LookupError("Criteria Operator with code {0} not found!".format(code))
     return _get_by_name(name)
 
@@ -66,7 +66,7 @@ def GetConstantNames():
 def GetConstantByName(name):
     """Gets a constant (object) by name.
        Raises a LookupError if no constant with the specified name exists."""
-    if not name in GetConstantNames():
+    if name not in GetConstantNames():
         raise LookupError("Criteria Constant with name {0} not found!".format(name))
     return _get_by_name(name)
 
@@ -84,7 +84,7 @@ class Criterion(JSON):
             value = NexposeCriteriaConstant.Value
         self.field = field
         self.operator = operator
-        self.value = value if value != None else ''
+        self.value = value if value is not None else ''
 
     def as_json(self):
         json_data = dict()

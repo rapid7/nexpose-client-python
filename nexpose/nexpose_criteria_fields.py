@@ -69,7 +69,7 @@ class CVSS_SCORE(NexposeCriteriaField):
     ValidValues = xrange_inclusive(0, 10)  # TODO: are integers accepted or must they really be floats ?
 
 
-class CVSS_SCORE(NexposeCriteriaField):
+class HOST_TYPE(NexposeCriteriaField):
     ValidOperators = (IN, NOT_IN)
     ValidValues = ('UNKNOWN', 'VIRTUAL', 'HYPERVISOR', 'BARE_METAL')  # See Value::HostType?
 
@@ -109,7 +109,8 @@ class RISK_SCORE(NexposeCriteriaField):
 
 class SCAN_DATE(NexposeCriteriaField):
     ValidOperators = (ON_OR_BEFORE, ON_OR_AFTER, BETWEEN, EARLIER_THAN, WITHIN_THE_LAST)
-    #ValueValues = FixNum for day arguments && Value::ScanDate::FORMAT for date arguments
+    # TODO: ??
+    # ValueValues = FixNum for day arguments && Value::ScanDate::FORMAT for date arguments
 
 
 class SERVICE(NexposeCriteriaField):

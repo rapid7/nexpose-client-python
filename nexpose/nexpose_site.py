@@ -81,7 +81,7 @@ class SiteConfiguration(SiteBase):
         config.credentials = [credential for credential in get_children_of(xml_data, 'Credentials')]
         config.users = [user for user in get_children_of(xml_data, 'Users')]
 
-        #Use scanconfig elements for the SiteConfiguration
+        # Use scanconfig elements for the SiteConfiguration
         scanconfig = get_element(xml_data, "ScanConfig")
         config.configid = scanconfig.get("configID")
         config.configtemplateid = scanconfig.get("templateID")
@@ -155,7 +155,7 @@ class SiteConfiguration(SiteBase):
             xml_users.append(user)
         xml_data.append(xml_users)
 
-        #Include ScanConfig attributes
+        # Include ScanConfig attributes
         attributes = {}
         attributes['configID'] = self.configid
         attributes['name'] = self.configname
@@ -170,6 +170,6 @@ class SiteConfiguration(SiteBase):
         xml_scanconfig.append(xml_scheduling)
         xml_data.append(xml_scanconfig)
 
-        #TODO: implement the xxxPrivileges
-        print as_string(as_xml(as_string(xml_data)))
+        # TODO: implement the xxxPrivileges
+        # print as_string(as_xml(as_string(xml_data)))
         return xml_data

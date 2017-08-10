@@ -46,7 +46,7 @@ class SharedCredentialSummary(SharedCredentialBase):
         credential.name = json['name']
         credential.all_sites = json['scope'] == 'ALL_SITES_ENABLED_DEFAULT'
 
-        #SharedCredentialSummary-specific:
+        # SharedCredentialSummary-specific:
         credential._service = json['service']
         credential.username = json['username']
         credential.domain = json['domain']
