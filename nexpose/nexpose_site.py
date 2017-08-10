@@ -77,6 +77,9 @@ class SiteConfiguration(SiteBase):
         config.description = get_content_of(xml_data, 'Description', config.description)
         config.is_dynamic = get_attribute(xml_data, 'isDynamic', config.is_dynamic) in ['1', 'true', True]
         config.hosts = [_host_to_object(host) for host in get_children_of(xml_data, 'Hosts')]
+        config.alerting = [alert for alert in get_children_of(xml_data, 'Alerting')]
+        config.credentials = [credential for credential in get_children_of(xml_data, 'Credentials')]
+        config.users = [user for user in get_children_of(xml_data, 'Users')]
 
         # Use scanconfig elements for the SiteConfiguration
         scanconfig = get_element(xml_data, "ScanConfig")
@@ -85,6 +88,7 @@ class SiteConfiguration(SiteBase):
         config.configname = scanconfig.get("name")
         config.configversion = scanconfig.get("configVersion")
         config.configengineid = scanconfig.get("engineID")
+        config.schedules = [schedule for schedule in get_children_of(scanconfig, 'Schedules')]
 
         return config
 
@@ -105,14 +109,16 @@ class SiteConfiguration(SiteBase):
         self.description = ''
         self.is_dynamic = False
         self.hosts = []
-        self.credentials = []  # TODO
-        self.alerting = []  # TODO
+        self.credentials = []
+        self.alerting = []
         self.scan_configuration = []  # TODO
         self.configid = self.id
         self.configtemplateid = "full-audit-without-web-spider"
         self.configname = "Full audit without Web Spider"
         self.configversion = 3
         self.configengineid = 3
+        self.users = []
+        self.schedules = []
 
     def AsXML(self, exclude_id):
         attributes = {}
@@ -135,10 +141,19 @@ class SiteConfiguration(SiteBase):
         xml_data.append(xml_hosts)
 
         xml_credentials = create_element('Credentials')
+        for credential in self.credentials:
+            xml_credentials.append(credential)
         xml_data.append(xml_credentials)
 
         xml_alerting = create_element('Alerting')
+        for alert in self.alerting:
+            xml_alerting.append(alert)
         xml_data.append(xml_alerting)
+
+        xml_users = create_element('Users')
+        for user in self.users:
+            xml_users.append(user)
+        xml_data.append(xml_users)
 
         # Include ScanConfig attributes
         attributes = {}
@@ -150,6 +165,8 @@ class SiteConfiguration(SiteBase):
 
         xml_scanconfig = create_element('ScanConfig', attributes)
         xml_scheduling = create_element('Scheduling')
+        for schedule in self.schedules:
+            xml_scheduling.append(schedule)
         xml_scanconfig.append(xml_scheduling)
         xml_data.append(xml_scanconfig)
 
