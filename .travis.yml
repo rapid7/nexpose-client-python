@@ -7,6 +7,6 @@ install:
   - pip install -r requirements.txt
   - pip install -r requirements_test.txt
 before_script:
-  - flake8
+  - if [[ $TRAVIS_PYTHON_VERSION != 2.6 ]]; then flake8; fi
 script:
   - py.test tests
