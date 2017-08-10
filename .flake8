@@ -1,0 +1,24 @@
+[flake8]
+exclude =
+    .cache,
+    .git,
+    .github,
+    *.txt,
+    __pycache__,
+    build,
+    demo,
+    dist,
+    docs,
+    test_fixtures
+
+ignore=
+    # too many long lines to worry about for now, revisit later
+    E501,
+    # lots of unused imports, revisit later
+    F401,
+    # lambda assignment, revisit later
+    E731,
+    # need to clean up all imports, revisit later
+    E402,
+    F403,
+    F405

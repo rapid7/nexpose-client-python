@@ -33,7 +33,7 @@ class EnginePoolSummary(EnginePoolBase):
 
     def __init__(self):
         EnginePoolBase.__init__(self)
-        self.status = EnginePoolStatus.Unknown
+        self.status = EnginePoolStatus.Unknown # noqa F821
 
 
 class EnginePoolConfiguration(EnginePoolBase):
@@ -59,7 +59,7 @@ class EnginePoolConfiguration(EnginePoolBase):
 
     def __init__(self):
         EnginePoolBase.__init__(self)
-        self.priority = EnginePoolPriority.Normal
+        self.priority = EnginePoolPriority.Normal # noqa F821
         self.assigned_sites = []
 
     def AsXML(self, exclude_id):

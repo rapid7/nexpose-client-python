@@ -14,4 +14,4 @@ class NexposeNodeTestCase(unittest.TestCase):
         records = fixture['records']
         self.assertEqual(len(records), 3)
 
-        record_empty = Node.CreateFromJSON(records[2])
+        record_empty = Node.CreateFromJSON(records[2]) # noqa F841
