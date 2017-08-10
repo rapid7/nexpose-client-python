@@ -58,7 +58,7 @@ def ExecuteWebRequest(uri, post_data, headers, timeout, get_method=None):
 
 def Execute_APIv1d1(uri, xml_input, timeout):
     post_data = as_string(xml_input)
-    headers = {"Content-type"  "text/xml"}  # TODO: add charset=UTF-8'
+    headers = {"Content-type" : "text/xml"}  # TODO: add charset=UTF-8'
     response = ExecuteWebRequest(uri, post_data, headers, timeout)
     return as_xml(response)
 
