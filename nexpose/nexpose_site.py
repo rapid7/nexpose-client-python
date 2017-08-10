@@ -78,7 +78,7 @@ class SiteConfiguration(SiteBase):
         config.is_dynamic = get_attribute(xml_data, 'isDynamic', config.is_dynamic) in ['1', 'true', True]
         config.hosts = [_host_to_object(host) for host in get_children_of(xml_data, 'Hosts')]
 
-        #Use scanconfig elements for the SiteConfiguration
+        # Use scanconfig elements for the SiteConfiguration
         scanconfig = get_element(xml_data, "ScanConfig")
         config.configid = scanconfig.get("configID")
         config.configtemplateid = scanconfig.get("templateID")
@@ -140,7 +140,7 @@ class SiteConfiguration(SiteBase):
         xml_alerting = create_element('Alerting')
         xml_data.append(xml_alerting)
 
-        #Include ScanConfig attributes
+        # Include ScanConfig attributes
         attributes = {}
         attributes['configID'] = self.configid
         attributes['name'] = self.configname
@@ -153,6 +153,6 @@ class SiteConfiguration(SiteBase):
         xml_scanconfig.append(xml_scheduling)
         xml_data.append(xml_scanconfig)
 
-        #TODO: implement the xxxPrivileges
-        print as_string(as_xml(as_string(xml_data)))
+        # TODO: implement the xxxPrivileges
+        # print as_string(as_xml(as_string(xml_data)))
         return xml_data

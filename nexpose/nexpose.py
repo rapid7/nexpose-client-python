@@ -58,7 +58,7 @@ def ExecuteWebRequest(uri, post_data, headers, timeout, get_method=None):
 
 def Execute_APIv1d1(uri, xml_input, timeout):
     post_data = as_string(xml_input)
-    headers = {"Content-type" : "text/xml"}  # TODO: add charset=UTF-8'
+    headers = {"Content-type": "text/xml"}  # TODO: add charset=UTF-8'
     response = ExecuteWebRequest(uri, post_data, headers, timeout)
     return as_xml(response)
 
@@ -68,8 +68,7 @@ def Execute_APIv1d2(uri, xml_input, timeout):
 
 
 def CreateHeadersWithSessionCookie(session_id):
-    headers = {}
-    headers["Cookie"] = "nexposeCCSessionID={0}".format(session_id)
+    headers = {"Cookie": "nexposeCCSessionID={0}".format(session_id)}
     return headers
 
 
@@ -85,7 +84,7 @@ def ExecuteGet_JSON(session_id, uri, sub_url, timeout, options=None):
         options = {}
     options = map(lambda a: "{0}={1}".format(a[0], a[1]), options.iteritems())
     headers = CreateHeadersWithSessionCookie(session_id)
-    #headers["Accept-Encoding"] = "utf-8"
+    # headers["Accept-Encoding"] = "utf-8"
     if sub_url.startswith('http'):  # TODO: refactor uri & sub_url so that json_utils.resolve_urls can work better
         uri = sub_url
     else:
@@ -785,7 +784,7 @@ class NexposeSession_APIv1d2(NexposeSession_APIv1d1):
         Return all details of a specified DiscoveryConnection (by name and scope).
         This function will return a single DiscoveryConnectionConfigurationResponse XML object (API 1.2).
         """
-        return self.ExecuteAdvancedOnDiscoveryConnection("DiscoveryConnectionConfigurationRequest", DiscoveryConnection_name, DiscoveryConnection_scope)  # TODO
+        return self.ExecuteAdvancedOnDiscoveryConnection("DiscoveryConnectionConfigurationRequest", DiscoveryConnection_name, DiscoveryConnection_scope)  # noqa F821 # TODO
 
     def RequestDiscoveryConnectionCreate(self, discoveryconnection_configuration):
         """
@@ -793,7 +792,7 @@ class NexposeSession_APIv1d2(NexposeSession_APIv1d1):
         Both name and fullname must be unique.
         This function will return a single DiscoveryConnectionCreateResponse XML object (API 1.2).
         """
-        return self.ExecuteAdvancedAfterCallingAsXML("DiscoveryConnectionCreateRequest", discoveryconnection_configuration, exclude_id=True)  # TODO
+        return self.ExecuteAdvancedAfterCallingAsXML("DiscoveryConnectionCreateRequest", discoveryconnection_configuration, exclude_id=True)  # noqa F821 # TODO
 
     def RequestDiscoveryConnectionListing(self):
         """
@@ -808,7 +807,7 @@ class NexposeSession_APIv1d2(NexposeSession_APIv1d1):
         Both name and fullname must be unique.
         This function will return a single DiscoveryConnectionUpdateResponse XML object (API 1.2).
         """
-        return self.ExecuteAdvancedAfterCallingAsXML("DiscoveryConnectionUpdateRequest", discoveryconnection_configuration, exclude_id=False)  # TODO
+        return self.ExecuteAdvancedAfterCallingAsXML("DiscoveryConnectionUpdateRequest", discoveryconnection_configuration, exclude_id=False)  # noqa F821 # TODO
 
     def RequestDiscoveryConnectionDelete(self, DiscoveryConnection_name, DiscoveryConnection_scope):
         """
@@ -1288,7 +1287,6 @@ class NexposeSession(NexposeSession_APIv1d2):
     def _GetStreamReader(self, sub_url):
         headers = CreateHeadersWithSessionCookie(self._session_id)
         response = OpenWebRequest(self._URI_root + sub_url, None, headers, self.timeout)
-        metadata = response.info()
         return response
 
     #
@@ -1536,12 +1534,11 @@ class NexposeSession(NexposeSession_APIv1d2):
 
     def GetScannedAssets(self, scan_or_id):
         """
-        TODO
         Return a list of nodes (a node is an asset linked with a specific scan).
         This function will return a dl_nexpose.NodeSummary object using a .
         Raises an exception on failure.
         """
-        xxx
+        # TODO: ??
         if isinstance(scan_or_id, ScanSummary):
             scan_or_id = scan_or_id.id
         response = self.VerifySuccess(self.RequestScanStatistics(scan_or_id))
@@ -2467,14 +2464,12 @@ class NexposeSession(NexposeSession_APIv1d2):
         #       to/for the logged in user
         filter_data = {'dir': '-1', 'sort': '-1', 'table-id': 'credential-listing'}
         data = self.ExecuteGetRecords('data/credential/shared/listing', filter_data)
-        #print data
         return imap(SharedCredentialSummary.CreateFromJSON, data)
 
     def GetSharedCredentialConfiguration(self, id_or_shared_credential):
         if isinstance(id_or_shared_credential, SharedCredentialBase):
             id_or_shared_credential = id_or_shared_credential.id
         data = self.ExecuteGet('data/credential/shared/get', {'credid': id_or_shared_credential})
-        #print as_string(data)
         return SharedCredentialConfiguration.CreateFromXML(data)
 
     def SaveSharedCredentialConfiguration(self, shared_credential):
@@ -2483,8 +2478,8 @@ class NexposeSession(NexposeSession_APIv1d2):
         if shared_credential.id == -1:
             old_ids = set(imap(lambda summary: summary.id, self.GetSharedCredentialSummaries()))
         xml = shared_credential.AsXML()
-        #print as_string(xml)
-        response = as_xml(self.ExecuteFormPost('data/credential/shared/save', xml))
+        # TODO: why is response not used?
+        response = as_xml(self.ExecuteFormPost('data/credential/shared/save', xml)) # noqa F841
         if shared_credential.id == -1:
             new_ids = set(imap(lambda summary: summary.id, self.GetSharedCredentialSummaries()))
 

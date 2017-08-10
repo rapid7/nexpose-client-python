@@ -18,4 +18,4 @@ class UserAuthenticatorSummary:
         self.is_external = False
 
     def AsXML(self):
-        raise NotImplementedError(__func__)
+        raise NotImplementedError(__func__) # noqa F821
