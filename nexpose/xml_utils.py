@@ -10,7 +10,7 @@ standard_library.install_aliases()
 def create_element(tag, optional_attributes=None):
     request = etree.Element(tag)
     if optional_attributes:
-        for tag, value in iter(optional_attributes.items()):
+        for tag, value in optional_attributes.items():
             request.attrib[tag] = "{0}".format(value)
     return request
 
