@@ -5,6 +5,7 @@ from builtins import object
 from future import standard_library
 standard_library.install_aliases()
 
+
 class NexposeCriteriaOperator(object):
     class __metaclass__(type):
         @property

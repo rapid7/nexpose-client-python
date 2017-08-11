@@ -2,18 +2,18 @@
 from __future__ import (absolute_import, division, print_function,
                         unicode_literals)
 from builtins import object
-import urllib.request, urllib.parse, urllib.error, urllib.request, urllib.error, urllib.parse
+import urllib.request
+import urllib.parse
+import urllib.error
+import urllib.request
+import urllib.error
+import urllib.parse
 import base64
-
-
 import json
 from json_utils import load_urls
-
 from lxml import etree
 from xml_utils import create_element, get_attribute, get_element, get_content_of, get_children_of, as_string, as_xml
-
 from python_utils import remove_front_slash, utf8_encoded
-
 from nexpose_asset import AssetHostTypes, AssetBase, AssetSummary, AssetDetails
 from nexpose_assetgroup import AssetGroupSummary, AssetGroupConfiguration
 from nexpose_assetfilter import AssetFilter, FilteredAsset

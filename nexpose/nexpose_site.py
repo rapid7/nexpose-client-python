@@ -159,6 +159,6 @@ class SiteConfiguration(SiteBase):
         xml_scanconfig.append(xml_scheduling)
         xml_data.append(xml_scanconfig)
 
-        #TODO: implement the xxxPrivileges
+        # TODO: implement the xxxPrivileges
         # print(as_string(as_xml(as_string(xml_data))))
         return xml_data

@@ -8,6 +8,7 @@ from nexpose import Node
 from future import standard_library
 standard_library.install_aliases()
 
+
 class NexposeNodeTestCase(unittest.TestCase):
     def testCreateFromJSON(self):
         fixture = LoadFixture('data-scan_complete-assets_Nexpose6.json')

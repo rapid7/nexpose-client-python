@@ -6,6 +6,7 @@ from builtins import object
 from future import standard_library
 standard_library.install_aliases()
 
+
 class JSON(object):
     @staticmethod
     def CreateFromJSON(json_dict):
@@ -14,8 +15,10 @@ class JSON(object):
     def as_json(self):
         raise NotImplementedError
 
+
 class HasID(object):
     pass
+
 
 def get_id(data, id_field_name):
     if isinstance(data, HasID):
@@ -23,6 +26,7 @@ def get_id(data, id_field_name):
     if isinstance(data, dict):
         return data.get(id_field_name, 0)
     return data  # assume the data is the id
+
 
 def load_urls(json_dict, url_loader):
     assert isinstance(json_dict, dict)

@@ -5,6 +5,7 @@ from builtins import object
 from future import standard_library
 standard_library.install_aliases()
 
+
 class Backup(object):
     @staticmethod
     def CreateFromJSON(json_dict):
