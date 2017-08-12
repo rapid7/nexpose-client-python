@@ -10,7 +10,6 @@ import urllib.error
 import urllib.parse
 import base64
 import json
-from collections import OrderedDict
 from json_utils import load_urls
 from lxml import etree
 from xml_utils import create_element, get_attribute, get_element, get_content_of, get_children_of, as_string, as_xml
@@ -196,7 +195,7 @@ def request_and_create_objects_from_xml(requestor, xpath, object_creator):
 
 def BuildLoginRequest(username, password):
     attributes = {'user-id': username, 'password': password}
-    login_request = create_element("LoginRequest", OrderedDict(attributes))
+    login_request = create_element("LoginRequest", attributes)
     return login_request
 
 
