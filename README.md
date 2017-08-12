@@ -1,4 +1,6 @@
 # nexpose-client-python
+[![Travis](https://img.shields.io/travis/rapid7/nexpose-client-python.svg)](https://travis-ci.org/rapid7/nexpose-client-python) [![PyPI](https://img.shields.io/pypi/v/nexpose.svg)](https://pypi.python.org/pypi/nexpose) ![PyPI](https://img.shields.io/pypi/status/nexpose.svg) [![GitHub license](https://img.shields.io/badge/license-BSD-blue.svg)](https://raw.githubusercontent.com/rapid7/nexpose-client-python/master/LICENSE) ![PyPI](https://img.shields.io/pypi/pyversions/nexpose.svg)
+
 This is the official Python package for the Python Nexpose API client library.
 
 For assistance with using the library, to share your scripts, or to discuss different approaches, please visit the Rapid7 community: https://community.rapid7.com/
