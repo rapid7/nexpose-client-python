@@ -31,9 +31,9 @@ class NexposeSessionTestCase(unittest.TestCase):
         self.assertEqual(session.GetURI_APIv1d1(), expected_uri)
 
     def testConstructionOfLoginRequest(self):
-        expected_request = '<LoginRequest user-id="nxadmin" password="nxpassword" />'
+        expected_request = [b'<LoginRequest user-id="nxadmin" password="nxpassword"/>', b'<LoginRequest password="nxpassword" user-id="nxadmin"/>']
         session = SpyFactory.CreateWithDefaultLogin("server")
-        self.assertEqualXml(session.GetLoginRequest(), expected_request)
+        self.assertIn(as_string(session.GetLoginRequest()), expected_request)
 
     def testCorrectLogin(self):
         session = SpyFactory.CreateWithDefaultLogin('*')
