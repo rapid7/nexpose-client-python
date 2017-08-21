@@ -22,7 +22,7 @@ setup(
     package_data={'': ['LICENSE']},
     package_dir={'nexpose': 'nexpose'},
     include_package_data=True,
-    version='0.1.2',
+    version='0.1.3',
     license='BSD',
     description='The official Python Nexpose API client library',
     long_description=readme(),
