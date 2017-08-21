@@ -4,12 +4,12 @@ cache: pip
 python:
   - 2.6
   - 2.7
+  - 3.4
   - 3.5
   - 3.6
 install:
   - pip install -r requirements.txt
   - pip install -r requirements_test.txt
-before_script:
-  - if [[ $TRAVIS_PYTHON_VERSION != 2.6 ]]; then flake8; fi
 script:
-  - py.test tests
+  - if [[ $TRAVIS_PYTHON_VERSION != 2.6 ]]; then flake8; fi
+  - py.test -v tests
