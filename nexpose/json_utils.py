@@ -1,4 +1,13 @@
-class JSON:
+# Future Imports for py2/3 backwards compat.
+from __future__ import (absolute_import, division, print_function,
+                        unicode_literals)
+
+from builtins import object
+from future import standard_library
+standard_library.install_aliases()
+
+
+class JSON(object):
     @staticmethod
     def CreateFromJSON(json_dict):
         raise NotImplementedError
@@ -7,7 +16,7 @@ class JSON:
         raise NotImplementedError
 
 
-class HasID:
+class HasID(object):
     pass
 
 
@@ -21,7 +30,7 @@ def get_id(data, id_field_name):
 
 def load_urls(json_dict, url_loader):
     assert isinstance(json_dict, dict)
-    for key in json_dict.keys():
+    for key in list(json_dict.keys()):
         if isinstance(json_dict[key], dict):
             if json_dict[key].get('json', None) is not None:
                 raise ValueError('json_dict[' + key + '] already contains a json-element')

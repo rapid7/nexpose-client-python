@@ -1,7 +1,13 @@
+# Future Imports for py2/3 backwards compat.
+from __future__ import (absolute_import, division, print_function,
+                        unicode_literals)
+from builtins import object
 from xml_utils import get_attribute
+from future import standard_library
+standard_library.install_aliases()
 
 
-class ReportStatus:
+class ReportStatus(object):
     STARTED = 'Started'
     GENERATED = 'Generated'
     FAILED = 'Failed'
@@ -9,13 +15,13 @@ class ReportStatus:
     UNKNOWN = 'Unknown'
 
 
-class ReportTemplate:
+class ReportTemplate(object):
     pass
 
 
 # TODO: test the difference between global and silo scoped reports
 #       and refactor accordingly
-class _ReportBase:
+class _ReportBase(object):
     def _InitalizeFromXML(self, xml_data, name_of_id_field):
         self.id = int(get_attribute(xml_data, name_of_id_field, self.id))
         self.status = get_attribute(xml_data, 'status', self.status)
@@ -33,7 +39,7 @@ class _ReportBase:
 
 # TODO: test the difference between global and silo scoped reports
 #       and refactor accordingly
-class _ReportConfigurationBase:
+class _ReportConfigurationBase(object):
     def _InitalizeFromXML(self, xml_data):
         self.template_id = get_attribute(xml_data, 'template-id', self.template_id)
         self.name = get_attribute(xml_data, 'name', self.name)

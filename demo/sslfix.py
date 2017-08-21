@@ -1,6 +1,12 @@
+# Future Imports for py2/3 backwards compat.
+from __future__ import (absolute_import, division, print_function,
+                        unicode_literals)
+
 # SOURCE: http://stackoverflow.com/questions/11772847/error-urlopen-error-errno-8-ssl-c504-eof-occurred-in-violation-of-protoco
 import ssl
 from functools import wraps
+from future import standard_library
+standard_library.install_aliases()
 
 
 def sslwrap(func):

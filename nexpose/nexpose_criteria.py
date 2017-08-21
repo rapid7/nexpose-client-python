@@ -1,11 +1,15 @@
+# Future Imports for py2/3 backwards compat.
+from __future__ import (absolute_import, division, print_function,
+                        unicode_literals)
+from builtins import object
 import sys
-_current_module = sys.modules[__name__]
-
+from future import standard_library
 from json_utils import JSON
 from nexpose_criteria_fields import *  # this will also import the operators and the constants
-_all_uppercase_names = [name for name in dir(_current_module) if name.isupper()]
-
 from python_utils import is_iterable, is_subclass_of
+standard_library.install_aliases()
+_current_module = sys.modules[__name__]
+_all_uppercase_names = [name for name in dir(_current_module) if name.isupper()]
 
 
 def _get_by_name(name):
@@ -13,8 +17,8 @@ def _get_by_name(name):
 
 
 def _get_filtered_classes(required_class):
-    _all_uppercase_variables = map(lambda name: _get_by_name(name), _all_uppercase_names)
-    return filter(lambda variable: is_subclass_of(variable, required_class), _all_uppercase_variables)
+    _all_uppercase_variables = [_get_by_name(name) for name in _all_uppercase_names]
+    return [variable for variable in _all_uppercase_variables if is_subclass_of(variable, required_class)]
 
 
 def GetFields():
@@ -24,7 +28,7 @@ def GetFields():
 
 def GetFieldNames():
     """Returns a list of supported field names by Nexpose Criteria"""
-    return map(lambda field: field.Name, _get_filtered_classes(NexposeCriteriaField))
+    return [field.Name for field in _get_filtered_classes(NexposeCriteriaField)]
 
 
 def GetFieldByName(name):
@@ -42,7 +46,7 @@ def GetOperators():
 
 def GetOperatorCodes():
     """Returns a list of supported operator codes by Nexpose Criteria"""
-    return map(lambda operator: operator.Code, _get_filtered_classes(NexposeCriteriaOperator))
+    return [operator.Code for operator in _get_filtered_classes(NexposeCriteriaOperator)]
 
 
 def GetOperatorByCode(code):
@@ -60,7 +64,7 @@ def GetConstants():
 
 def GetConstantNames():
     """Returns a list of supported constant names by Nexpose Criteria"""
-    return map(lambda constant: constant.Name, _get_filtered_classes(NexposeCriteriaConstant))
+    return [constant.Name for constant in _get_filtered_classes(NexposeCriteriaConstant)]
 
 
 def GetConstantByName(name):
@@ -95,7 +99,7 @@ class Criterion(JSON):
         return json_data
 
 
-class Criteria:
+class Criteria(object):
     @staticmethod
     def Create(criteria=None, operator=None):
         return Criteria(criteria, operator)
@@ -117,7 +121,7 @@ class Criteria:
     def as_json(self):
         json_data = dict()
         json_data['operator'] = self.operator.Code
-        json_data['criteria'] = map(lambda criterion: criterion.as_json(), self.criteria)
+        json_data['criteria'] = [criterion.as_json() for criterion in self.criteria]
         return json_data
 
 

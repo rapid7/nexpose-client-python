@@ -1,7 +1,13 @@
+# Future Imports for py2/3 backwards compat.
+from __future__ import (absolute_import, division, print_function,
+                        unicode_literals)
+from builtins import object
 from xml_utils import get_attribute
+from future import standard_library
+standard_library.install_aliases()
 
 
-class AssetHostTypes:
+class AssetHostTypes(object):
     Empty = ''
     Guest = 'GUEST'
     Hypervisor = 'HYPERVISOR'
@@ -9,7 +15,7 @@ class AssetHostTypes:
     Mobile = 'MOBILE'
 
 
-class AssetBase:
+class AssetBase(object):
     def InitializeFromXML(self, xml_data):
         self.id = int(get_attribute(xml_data, 'id', self.id))
         self.risk_score = float(get_attribute(xml_data, 'riskscore', self.risk_score))

@@ -13,6 +13,7 @@ packages = [
 
 requires = [
     'lxml',
+    'future'
 ]
 
 setup(

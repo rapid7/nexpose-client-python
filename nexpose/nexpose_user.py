@@ -1,7 +1,13 @@
+# Future Imports for py2/3 backwards compat.
+from __future__ import (absolute_import, division, print_function,
+                        unicode_literals)
+from builtins import object
 from xml_utils import get_attribute, create_element
+from future import standard_library
+standard_library.install_aliases()
 
 
-class UserRoles:
+class UserRoles(object):
     global_admin = 'global-admin'
     security_manager = 'security-manager'
     site_admin = 'siteadmin'
@@ -10,13 +16,13 @@ class UserRoles:
     custom = 'custom'
 
 
-class UserSummaryStatistics:
+class UserSummaryStatistics(object):
     def __init__(self):
         self.site_count = 0
         self.assetgroup_count = 0
 
 
-class UserBase:
+class UserBase(object):
     def InitalizeFromXML(self, xml_data, user_fieldname):
         self.id = int(get_attribute(xml_data, 'id', self.id))
         self.username = get_attribute(xml_data, user_fieldname, self.username)

@@ -1,5 +1,11 @@
+# Future Imports for py2/3 backwards compat.
+from __future__ import (absolute_import, division, print_function,
+                        unicode_literals)
+from builtins import object
 from .context import nexpose
 from nexpose import NexposeSession, NexposeConnectionException, as_xml
+from future import standard_library
+standard_library.install_aliases()
 
 
 class NexposeSessionSpy(NexposeSession):
@@ -34,7 +40,7 @@ class NexposeSessionSpy(NexposeSession):
         return self._Execute_Fake(request)
 
 
-class SpyFactory:
+class SpyFactory(object):
     @staticmethod
     def CreateEmpty():
         return NexposeSessionSpy(host="", port=0, username="", password="")

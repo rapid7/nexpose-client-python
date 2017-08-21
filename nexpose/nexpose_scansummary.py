@@ -1,7 +1,14 @@
+# Future Imports for py2/3 backwards compat.
+from __future__ import (absolute_import, division, print_function,
+                        unicode_literals)
+from builtins import map
+from builtins import object
 from xml_utils import get_attribute, get_element, get_content_of
+from future import standard_library
+standard_library.install_aliases()
 
 
-class VulnerabilityStatus:
+class VulnerabilityStatus(object):
     vuln_exploit = 'vuln-exploit'
     vuln_version = 'vuln-version'
     vuln_potential = 'vuln-potential'
@@ -12,7 +19,7 @@ class VulnerabilityStatus:
     other = 'other'
 
 
-class ScanSummaryVulnerability:
+class ScanSummaryVulnerability(object):
     @staticmethod
     def CreateFromXML(xml_data):
         vulnerability = ScanSummaryVulnerability()
@@ -27,7 +34,7 @@ class ScanSummaryVulnerability:
         self.count = 0
 
 
-class ScanSummaryTaskCounts:
+class ScanSummaryTaskCounts(object):
     @staticmethod
     def CreateFromXML(xml_data):
         task_counts = ScanSummaryTaskCounts()
@@ -42,7 +49,7 @@ class ScanSummaryTaskCounts:
         self.completed = 0
 
 
-class ScanSummaryNodeCounts:
+class ScanSummaryNodeCounts(object):
     @staticmethod
     def CreateFromXML(xml_data):
         node_counts = ScanSummaryNodeCounts()
@@ -61,7 +68,7 @@ class ScanSummaryNodeCounts:
         self.other = 0
 
 
-class ScanStatus:
+class ScanStatus(object):
     Running = 'running'
     Finished = 'finished'
     Stopped = 'stopped'
@@ -72,7 +79,7 @@ class ScanStatus:
     Unknown = 'unknown'
 
 
-class ScanSummary:
+class ScanSummary(object):
     @staticmethod
     def CreateFromXML(xml_data):
         summary = ScanSummary()
@@ -96,9 +103,9 @@ class ScanSummary:
         else:
             summary.node_counts = ScanSummaryNodeCounts.CreateFromXML(get_element(xml_data, 'NodeSummary', summary.node_counts))
         if get_element(xml_data, 'vulnerabilities') is not None:
-            summary.vulnerabilities = map(ScanSummaryVulnerability.CreateFromXML, xml_data.findall('vulnerabilities'))
+            summary.vulnerabilities = list(map(ScanSummaryVulnerability.CreateFromXML, xml_data.findall('vulnerabilities')))
         else:
-            summary.vulnerabilities = map(ScanSummaryVulnerability.CreateFromXML, xml_data.findall('VulnerabilitySummary'))
+            summary.vulnerabilities = list(map(ScanSummaryVulnerability.CreateFromXML, xml_data.findall('VulnerabilitySummary')))
         return summary
 
     def __init__(self):

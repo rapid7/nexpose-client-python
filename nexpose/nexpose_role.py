@@ -1,13 +1,19 @@
+# Future Imports for py2/3 backwards compat.
+from __future__ import (absolute_import, division, print_function,
+                        unicode_literals)
+from builtins import object
 from copy import deepcopy
 from xml_utils import create_element, get_attribute, get_content_of, get_children_of
+from future import standard_library
+standard_library.install_aliases()
 
 
-class RoleScope:
+class RoleScope(object):
     Global = 'global'
     Silo = 'silo'
 
 
-class _RoleBase:
+class _RoleBase(object):
     def InitalizeFromXML(self, xml_data, description_fieldname, description_getter):
         self.id = int(get_attribute(xml_data, 'id', self.id))
         self.name = get_attribute(xml_data, 'name', self.name)
@@ -100,7 +106,7 @@ class RoleDetails(RoleSummary):
     @staticmethod
     def _CreatePrivelegesElement(tag, privileges):
         xml_data = create_element(tag)
-        for key, value in privileges.iteritems():
+        for key, value in privileges.items():
             attribute = {'enabled': 1 if value else 0}
             xml_subdata = create_element(key, attribute)
             xml_data.append(xml_subdata)

@@ -1,12 +1,18 @@
-from load_unittest import unittest
-from LoadFixture import LoadFixture
+# Future Imports for py2/3 backwards compat.
+from __future__ import (absolute_import, division, print_function,
+                        unicode_literals)
+from builtins import map
+from .load_unittest import unittest
+from .LoadFixture import LoadFixture
 from .context import nexpose
 from nexpose import Tag, TagAttribute, TagConfiguration, TagColors, DEFAULT_SOURCENAME, DEFAULT_TAGCOLOR
+from future import standard_library
+standard_library.install_aliases()
 
 
 def LoadAllDefaultTags():
     json = LoadFixture("default_tags.json")
-    return map(Tag.CreateFromJSON, json["resources"])
+    return list(map(Tag.CreateFromJSON, json["resources"]))
 
 
 def LoadTag(fixture_name):
@@ -29,7 +35,7 @@ class NexposeTagAttributeTestCase(unittest.TestCase):
 
 class NexposeTagTestCase(unittest.TestCase):
     def assertTagAttributeValue(self, tag, name, expected_value):
-        source_attribute = filter(lambda attr: attr.name == name, tag.attributes)[0]
+        source_attribute = [attr for attr in tag.attributes if attr.name == name][0]
         self.assertEqual(expected_value, source_attribute.value)
 
     def assertCreation(self, tag, expected_name, expected_type, expected_source_name):

@@ -1,7 +1,14 @@
+# Future Imports for py2/3 backwards compat.
+from __future__ import (absolute_import, division, print_function,
+                        unicode_literals)
+
+from builtins import object
 from xml_utils import get_attribute, get_element, get_content_of, create_element
+from future import standard_library
+standard_library.install_aliases()
 
 
-class TicketState:
+class TicketState(object):
     OPEN = 'O'
     ASSIGNED = 'A'
     MODIFIED = 'M'
@@ -15,7 +22,7 @@ class TicketState:
     UNKNOWN = 'U'
 
 
-class TicketPriority:
+class TicketPriority(object):
     LOW = 'low'
     MODERATE = 'moderate'
     NORMAL = 'normal'
@@ -23,7 +30,7 @@ class TicketPriority:
     CRITICAL = 'critical'
 
 
-class TicketEvent:
+class TicketEvent(object):
     @staticmethod
     def CreateFromXML(xml_data):
         xml_event = get_element(xml_data, 'Event')
@@ -43,7 +50,7 @@ class TicketEvent:
         self.comment = ''
 
 
-class _TicketBase:
+class _TicketBase(object):
     def InitalizeFromXML(self, xml_data):
         self.name = get_attribute(xml_data, 'name', self.name)
         self.asset_id = int(get_attribute(xml_data, 'device-id', self.asset_id))
@@ -57,7 +64,7 @@ class _TicketBase:
         self.priority = TicketPriority.NORMAL
 
 
-class _TicketDetailsBase:
+class _TicketDetailsBase(object):
     def _InitializeFromXML(self, xml_data):
         self.vulnerabilities_ids = [get_attribute(xml_vulnerability, 'id') for xml_vulnerability in xml_data.findall('Vulnerabilities/Vulnerability')]
 

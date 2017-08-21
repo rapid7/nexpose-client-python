@@ -1,7 +1,13 @@
+# Future Imports for py2/3 backwards compat.
+from __future__ import (absolute_import, division, print_function,
+                        unicode_literals)
+from builtins import object
 from xml_utils import get_attribute
+from future import standard_library
+standard_library.install_aliases()
 
 
-class UserAuthenticatorSummary:
+class UserAuthenticatorSummary(object):
     @staticmethod
     def CreateFromXML(xml_data):
         summary = UserAuthenticatorSummary()

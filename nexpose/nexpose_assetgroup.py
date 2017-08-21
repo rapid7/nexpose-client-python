@@ -1,8 +1,14 @@
+# Future Imports for py2/3 backwards compat.
+from __future__ import (absolute_import, division, print_function,
+                        unicode_literals)
+from builtins import object
 from xml_utils import get_attribute, get_element, as_string
 from nexpose_asset import AssetSummary
+from future import standard_library
+standard_library.install_aliases()
 
 
-class _AssetGroupBase:
+class _AssetGroupBase(object):
     def InitializeFromXML(self, xml_data):
         self.id = int(get_attribute(xml_data, 'id', self.id))
         self.name = get_attribute(xml_data, 'name', self.name)
@@ -31,7 +37,7 @@ class AssetGroupConfiguration(_AssetGroupBase):
     @staticmethod
     def CreateFromXML(xml_data):
         xml_devices = get_element(xml_data, 'Devices', None)
-        print as_string(xml_data)
+        print(as_string(xml_data))
         config = AssetGroupConfiguration()
         config.InitializeFromXML(xml_data)
         config.description = config.short_description

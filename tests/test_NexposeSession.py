@@ -1,7 +1,12 @@
-from load_unittest import unittest
+# Future Imports for py2/3 backwards compat.
+from __future__ import (absolute_import, division, print_function,
+                        unicode_literals)
+from .load_unittest import unittest
 from .context import nexpose
 from nexpose import *
-from NexposeSessionSpy import NexposeSessionSpy, SpyFactory
+from .NexposeSessionSpy import NexposeSessionSpy, SpyFactory
+from future import standard_library
+standard_library.install_aliases()
 
 FAKE_SESSIONID = "B33R"
 FAKE_SITEID = 201
@@ -26,9 +31,9 @@ class NexposeSessionTestCase(unittest.TestCase):
         self.assertEqual(session.GetURI_APIv1d1(), expected_uri)
 
     def testConstructionOfLoginRequest(self):
-        expected_request = '<LoginRequest user-id="nxadmin" password="nxpassword" />'
+        expected_request = [b'<LoginRequest user-id="nxadmin" password="nxpassword"/>', b'<LoginRequest password="nxpassword" user-id="nxadmin"/>']
         session = SpyFactory.CreateWithDefaultLogin("server")
-        self.assertEqualXml(session.GetLoginRequest(), expected_request)
+        self.assertIn(as_string(session.GetLoginRequest()), expected_request)
 
     def testCorrectLogin(self):
         session = SpyFactory.CreateWithDefaultLogin('*')

@@ -1,4 +1,9 @@
+# Future Imports for py2/3 backwards compat.
+from __future__ import (absolute_import, division, print_function,
+                        unicode_literals)
 import sys
+from future import standard_library
+standard_library.install_aliases()
 
 
 def _assertIsInstance(self, obj, class_or_type_or_tuple):
