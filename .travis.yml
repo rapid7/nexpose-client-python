@@ -12,4 +12,4 @@ install:
   - pip install -r requirements_test.txt
 script:
   - if [[ $TRAVIS_PYTHON_VERSION != 2.6 ]]; then flake8; fi
-  - py.test -v tests
+  - py.test tests
