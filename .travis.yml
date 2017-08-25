@@ -2,6 +2,7 @@ sudo: false
 branches:
   only:
   - master
+  - fix_imports_py2_py3
 language: python
 cache: pip
 python:
