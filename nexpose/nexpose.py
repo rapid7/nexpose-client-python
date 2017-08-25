@@ -10,35 +10,35 @@ import urllib.error
 import urllib.parse
 import base64
 import json
-from json_utils import load_urls
+from .json_utils import load_urls
 from lxml import etree
-from xml_utils import create_element, get_attribute, get_element, get_content_of, get_children_of, as_string, as_xml
-from python_utils import remove_front_slash, utf8_encoded
-from nexpose_asset import AssetHostTypes, AssetBase, AssetSummary, AssetDetails
-from nexpose_assetgroup import AssetGroupSummary, AssetGroupConfiguration
-from nexpose_assetfilter import AssetFilter, FilteredAsset
-from nexpose_backup import Backup
-from nexpose_credential import GetSupportedCredentials, Credential, PrivilegeElevationType
-from nexpose_credential import Credential_CIFS, Credential_CIFS_Hash, Credential_AS400, Credential_CVS, Credential_RemoteExecution, Credential_TDS
-from nexpose_credential import Credential_DB2, Credential_MySQL, Credential_Oracle, Credential_PostgreSQL, Credential_Sybase, Credential_Notes
-from nexpose_credential import Credential_FTP, Credential_HTTP, Credential_SNMP, Credential_SNMPV3, Credential_SSH, Credential_SSH_KEY, Credential_Telnet
-from nexpose_discoveryconnection import DiscoveryConnectionProtocol, DiscoveryConnectionSummary, DiscoveryConnectionConfiguration
-from nexpose_engine import EngineStatus, EnginePriority, EngineBase, EngineSummary, EngineConfiguration
-from nexpose_node import NodeScanStatus, NodeBase, Node
-from nexpose_privileges import AssetGroupPrivileges, GlobalPrivileges, SitePrivileges
-from nexpose_report import ReportStatus, ReportTemplate, ReportConfigurationSummary, ReportConfiguration, ReportSummary
-from nexpose_role import RoleScope, RoleSummary, RoleDetails
-from nexpose_scansummary import VulnerabilityStatus, ScanStatus, ScanSummary, ScanSummaryNodeCounts, ScanSummaryTaskCounts, ScanSummaryVulnerability
-from nexpose_site import Host, Range, SiteBase, SiteSummary, SiteConfiguration
-from nexpose_sharedcredential import SharedCredentialBase, SharedCredentialSummary, SharedCredentialConfiguration
-from nexpose_status import NexposeStatus
-from nexpose_tag import DEFAULT_SOURCENAME, DEFAULT_TAGCOLOR, TagConfiguration, TagAttribute, Tag, TagColors
-from nexpose_ticket import TicketState, TicketPriority, TicketEvent, NewTicket, TicketSummary, TicketDetails
-from nexpose_user import UserRoles, UserSummaryStatistics, UserBase, UserSummary, UserConfiguration
-from nexpose_userauthenticator import UserAuthenticatorSummary
-from nexpose_vulnerability import VulnerabilityReference, VulnerabilitySummary, VulnerabilityDetail
-from nexpose_vulnerabilityexception import VulnerabilityExceptionStatus, VulnerabilityExceptionReason, VulnerabilityExceptionScope, SiloVulnerabilityExceptionDetails, VulnerabilityException
-import nexpose_criteria as Criteria
+from .xml_utils import create_element, get_attribute, get_element, get_content_of, get_children_of, as_string, as_xml
+from .python_utils import remove_front_slash, utf8_encoded
+from .nexpose_asset import AssetHostTypes, AssetBase, AssetSummary, AssetDetails
+from .nexpose_assetgroup import AssetGroupSummary, AssetGroupConfiguration
+from .nexpose_assetfilter import AssetFilter, FilteredAsset
+from .nexpose_backup import Backup
+from .nexpose_credential import GetSupportedCredentials, Credential, PrivilegeElevationType
+from .nexpose_credential import Credential_CIFS, Credential_CIFS_Hash, Credential_AS400, Credential_CVS, Credential_RemoteExecution, Credential_TDS
+from .nexpose_credential import Credential_DB2, Credential_MySQL, Credential_Oracle, Credential_PostgreSQL, Credential_Sybase, Credential_Notes
+from .nexpose_credential import Credential_FTP, Credential_HTTP, Credential_SNMP, Credential_SNMPV3, Credential_SSH, Credential_SSH_KEY, Credential_Telnet
+from .nexpose_discoveryconnection import DiscoveryConnectionProtocol, DiscoveryConnectionSummary, DiscoveryConnectionConfiguration
+from .nexpose_engine import EngineStatus, EnginePriority, EngineBase, EngineSummary, EngineConfiguration
+from .nexpose_node import NodeScanStatus, NodeBase, Node
+from .nexpose_privileges import AssetGroupPrivileges, GlobalPrivileges, SitePrivileges
+from .nexpose_report import ReportStatus, ReportTemplate, ReportConfigurationSummary, ReportConfiguration, ReportSummary
+from .nexpose_role import RoleScope, RoleSummary, RoleDetails
+from .nexpose_scansummary import VulnerabilityStatus, ScanStatus, ScanSummary, ScanSummaryNodeCounts, ScanSummaryTaskCounts, ScanSummaryVulnerability
+from .nexpose_site import Host, Range, SiteBase, SiteSummary, SiteConfiguration
+from .nexpose_sharedcredential import SharedCredentialBase, SharedCredentialSummary, SharedCredentialConfiguration
+from .nexpose_status import NexposeStatus
+from .nexpose_tag import DEFAULT_SOURCENAME, DEFAULT_TAGCOLOR, TagConfiguration, TagAttribute, Tag, TagColors
+from .nexpose_ticket import TicketState, TicketPriority, TicketEvent, NewTicket, TicketSummary, TicketDetails
+from .nexpose_user import UserRoles, UserSummaryStatistics, UserBase, UserSummary, UserConfiguration
+from .nexpose_userauthenticator import UserAuthenticatorSummary
+from .nexpose_vulnerability import VulnerabilityReference, VulnerabilitySummary, VulnerabilityDetail
+from .nexpose_vulnerabilityexception import VulnerabilityExceptionStatus, VulnerabilityExceptionReason, VulnerabilityExceptionScope, SiloVulnerabilityExceptionDetails, VulnerabilityException
+from . import nexpose_criteria as Criteria
 from future import standard_library
 standard_library.install_aliases()
 
@@ -58,7 +58,7 @@ def OpenWebRequest(uri, post_data, headers, timeout, get_method=None):
 
 def ExecuteWebRequest(uri, post_data, headers, timeout, get_method=None):
     response = OpenWebRequest(uri, post_data, headers, timeout, get_method)
-    return response.read()
+    return response.read().decode('utf-8')
 
 
 def Execute_APIv1d1(uri, xml_input, timeout):

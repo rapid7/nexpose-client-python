@@ -3,7 +3,7 @@ from __future__ import (absolute_import, division, print_function,
                         unicode_literals)
 from builtins import map
 from builtins import object
-from xml_utils import get_attribute, get_element, get_content_of
+from .xml_utils import get_attribute, get_element, get_content_of
 from future import standard_library
 standard_library.install_aliases()
 

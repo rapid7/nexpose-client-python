@@ -3,8 +3,8 @@ from __future__ import (absolute_import, division, print_function,
                         unicode_literals)
 from builtins import range
 from builtins import object
-from nexpose_criteria_operators import *
-from nexpose_criteria_constants import *
+from .nexpose_criteria_operators import *
+from .nexpose_criteria_constants import *
 from future import standard_library
 standard_library.install_aliases()
 
