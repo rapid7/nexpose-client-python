@@ -2,8 +2,8 @@
 from __future__ import (absolute_import, division, print_function,
                         unicode_literals)
 from builtins import object
-from .context import nexpose
-from nexpose import NexposeSession, NexposeConnectionException, as_xml
+from nexpose.nexpose import NexposeSession, NexposeConnectionException
+from nexpose.xml_utils import as_xml
 from future import standard_library
 standard_library.install_aliases()
 

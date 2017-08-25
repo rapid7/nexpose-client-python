@@ -4,8 +4,7 @@ from __future__ import (absolute_import, division, print_function,
 from builtins import map
 from .load_unittest import unittest
 from .LoadFixture import LoadFixture
-from .context import nexpose
-from nexpose import Tag, TagAttribute, TagConfiguration, TagColors, DEFAULT_SOURCENAME, DEFAULT_TAGCOLOR
+from nexpose.nexpose_tag import Tag, TagAttribute, TagConfiguration, TagColors, DEFAULT_SOURCENAME, DEFAULT_TAGCOLOR
 from future import standard_library
 standard_library.install_aliases()
 
