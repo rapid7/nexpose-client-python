@@ -3,7 +3,7 @@
 
 This is the official Python package for the Python Nexpose API client library.
 
-For assistance with using the gem or to discuss different approaches, please open an issue. To share or discuss scripts which use the gem head over to the [Nexpose Resources](https://github.com/rapid7/nexpose-resources) project.
+For assistance with using the library or to discuss different approaches, please open an issue. To share or discuss scripts which use the library head over to the [Nexpose Resources](https://github.com/rapid7/nexpose-resources) project.
 
 Check out the [wiki](https://github.com/rapid7/nexpose-client-python/wiki) for walk-throughs and other documentation. Submit bugs and feature requests on the [issues](https://github.com/rapid7/nexpose-client-python/issues) page.
 
