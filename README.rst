@@ -1,12 +1,15 @@
 nexpose-client-python
 =====================
 
+|Travis| |PyPI Version| |PyPI Status| |GitHub license| |PyPI Pythons|
+
 This is the official Python package for the Python Nexpose API client
 library.
 
-For assistance with using the library, to share your scripts, or to
-discuss different approaches, please visit the Rapid7 community:
-https://community.rapid7.com/
+For assistance with using the library or to discuss different
+approaches, please open an issue. To share or discuss scripts which use
+the library head over to the `Nexpose
+Resources <https://github.com/rapid7/nexpose-resources>`__ project.
 
 Check out the
 `wiki <https://github.com/rapid7/nexpose-client-python/wiki>`__ for
@@ -35,6 +38,11 @@ Contributions
 We welcome contributions to this package. Please see
 `CONTRIBUTING <https://github.com/rapid7/nexpose-client-python/blob/master/.github/CONTRIBUTING.md>`__ for details.
 
+Full usage examples or task-oriented scripts should be submitted to the
+`Nexpose Resources <https://github.com/rapid7/nexpose-resources>`__
+project. Smaller examples can be added to the
+`wiki <https://github.com/rapid7/nexpose-client-python/wiki>`__.
+
 License
 -------
 
@@ -48,3 +56,12 @@ Credits
 | Rapid7, Inc.
 
 See `contributors <https://github.com/rapid7/nexpose-client-python/blob/master/contributors.md>`__ for more info.
+
+.. |Travis| image:: https://img.shields.io/travis/rapid7/nexpose-client-python.svg
+   :target: https://travis-ci.org/rapid7/nexpose-client-python
+.. |PyPI Version| image:: https://img.shields.io/pypi/v/nexpose.svg
+   :target: https://pypi.python.org/pypi/nexpose
+.. |PyPI Status| image:: https://img.shields.io/pypi/status/nexpose.svg
+.. |GitHub license| image:: https://img.shields.io/badge/license-BSD-blue.svg
+   :target: https://raw.githubusercontent.com/rapid7/nexpose-client-python/master/LICENSE
+.. |PyPI Pythons| image:: https://img.shields.io/pypi/pyversions/nexpose.svg

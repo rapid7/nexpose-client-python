@@ -78,6 +78,8 @@ Finally, submit the PR. Navigate to ```https://github.com/<your-github-username>
 Typically this process is reserved for contributors with push permissions to
 nexpose-client-python:
 
+Be sure to regenerate the README.rst file if the README.md has changed. Use `pandoc -s -r markdown -w rst README.md -o README.rst` and validate the link URLs.
+
 ### Pypi Release
 
 Pypi releases, for use with the `pip` command, are performed by a Jenkins job. Currently Jenkins access is restricted to Rapid7 employees. The package will be published at [https://pypi.python.org/pypi/nexpose](https://pypi.python.org/pypi/nexpose).
