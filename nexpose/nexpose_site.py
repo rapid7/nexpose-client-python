@@ -1,7 +1,9 @@
 # Future Imports for py2/3 backwards compat.
 from __future__ import (absolute_import, division, print_function,
                         unicode_literals)
+import datetime
 from builtins import object
+from nexpose_tag import DEFAULT_TAGCOLOR
 from xml_utils import get_attribute, get_content_of, get_children_of, create_element, as_string, as_xml, get_element
 from future import standard_library
 standard_library.install_aliases()
@@ -86,6 +88,7 @@ class SiteConfiguration(SiteBase):
         config.alerting = [alert for alert in get_children_of(xml_data, 'Alerting')]
         config.credentials = [credential for credential in get_children_of(xml_data, 'Credentials')]
         config.users = [user for user in get_children_of(xml_data, 'Users')]
+        config.tags = [tag for tag in get_children_of(xml_data, 'Tags')]
 
         # Use scanconfig elements for the SiteConfiguration
         scanconfig = get_element(xml_data, "ScanConfig")
@@ -125,6 +128,7 @@ class SiteConfiguration(SiteBase):
         self.configengineid = 3
         self.users = []
         self.schedules = []
+        self.tags = []
 
     def AsXML(self, exclude_id):
         attributes = {}
@@ -175,6 +179,38 @@ class SiteConfiguration(SiteBase):
             xml_scheduling.append(schedule)
         xml_scanconfig.append(xml_scheduling)
         xml_data.append(xml_scanconfig)
+
+        xml_tags = create_element('Tags')
+        for tag in self.tags:
+            for tag_data in tag:
+                tag_data_name = get_attribute(tag_data, 'name')
+                tag_data_value = get_attribute(tag_data, 'value')
+
+                # CREATION_DATE must be in epoch time.
+                if tag_data_name == 'CREATION_DATE':
+                    creation_date_value = get_attribute(tag_data, 'value')
+                    creation_date_as_datetime = datetime.datetime.strptime(creation_date_value, '%a %b %d %H:%M:%S %Z %Y')
+                    creation_date_as_epoch = creation_date_as_datetime.strftime('%s')
+                    tag_data.attrib['value'] = creation_date_as_epoch
+
+                # The "Built-in" tags do not return the HTML color code.
+                if tag_data_name == 'COLOR':
+                    color_value = get_attribute(tag_data, 'value')
+                    # Throws an exception: "param must have a value"
+                    if not color_value:
+                        tag_data.attrib['value'] = str(DEFAULT_TAGCOLOR)
+
+                # A creator user ID of 0 cannot be submitted.
+                if tag_data_name == 'CREATOR_USER_ID':
+                    creator_user_id_value = get_attribute(tag_data, 'value')
+                    # Throws an exception: "The value '0' must be a positive integer."
+                    # This is for the "Built-in" tags like "Low", "Medium", "High"
+                    # Does not permanently save "1" to the tag.
+                    if creator_user_id_value == "0":
+                        tag_data.attrib['value'] = "1"
+
+                xml_tags.append(tag)
+        xml_data.append(xml_tags)
 
         # TODO: implement the xxxPrivileges
         # print(as_string(as_xml(as_string(xml_data))))
