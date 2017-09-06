@@ -29,6 +29,7 @@ from nexpose_privileges import AssetGroupPrivileges, GlobalPrivileges, SitePrivi
 from nexpose_report import ReportStatus, ReportTemplate, ReportConfigurationSummary, ReportConfiguration, ReportSummary
 from nexpose_role import RoleScope, RoleSummary, RoleDetails
 from nexpose_scansummary import VulnerabilityStatus, ScanStatus, ScanSummary, ScanSummaryNodeCounts, ScanSummaryTaskCounts, ScanSummaryVulnerability
+from nexpose_scantemplate import ScanTemplateSummary
 from nexpose_site import Host, Range, SiteBase, SiteSummary, SiteConfiguration
 from nexpose_sharedcredential import SharedCredentialBase, SharedCredentialSummary, SharedCredentialConfiguration
 from nexpose_status import NexposeStatus
@@ -2404,6 +2405,17 @@ class NexposeSession(NexposeSession_APIv1d2):
         if isinstance(assetgroup_or_id, AssetGroupSummary):
             assetgroup_or_id = assetgroup_or_id.id
         return self._RemoveTagFrom(APIURL_ASSETGROUPS, tag_or_id, assetgroup_or_id)
+
+    #
+    # The following functions implement the Scan Templates API (not documented):
+    # =====================================================
+
+    def GetScanTemplateSummaries(self)
+        json_dict = self.ExecutePagedGet_v20("/scan_templates")
+        resources = json_dict.get("resources", None)
+        if resources:
+            return map(ScanTemplateSummary.CreateFromJSON, resources)
+        return []
 
     #
     # The following functions implement the Credentials API (not documented):
