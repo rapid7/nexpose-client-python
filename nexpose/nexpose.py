@@ -94,7 +94,7 @@ def ExecuteGet_JSON(session_id, uri, sub_url, timeout, options=None):
         uri = sub_url
     else:
         uri = uri + sub_url + ("" if not options else "?" + "&".join(options))
-    return ExecuteWebRequest(uri, None, headers, timeout).decode("utf-8")
+    return ExecuteWebRequest(uri, None, headers, timeout)
 
 
 def ExecuteWithPostData_FORM(session_id, uri, sub_url, timeout, post_data):
