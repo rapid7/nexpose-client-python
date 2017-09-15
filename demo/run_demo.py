@@ -6,12 +6,10 @@ from __future__ import (absolute_import, division, print_function,
 from builtins import map
 from builtins import input
 from builtins import range
-#from fix_path import make_dlnexpose_importable
 from time import sleep
 from io import BytesIO
 from zipfile import ZipFile
 import sslfix
-#make_dlnexpose_importable()
 import nexpose.nexpose as nexpose
 from future import standard_library
 standard_library.install_aliases()
