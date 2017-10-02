@@ -2,8 +2,8 @@
 from __future__ import (absolute_import, division, print_function,
                         unicode_literals)
 from .load_unittest import unittest
-from .context import nexpose
-from nexpose import *
+from nexpose.nexpose import NexposeFailureException, NexposeException, SessionIsNotClosedException
+from nexpose.xml_utils import as_string, as_xml
 from .NexposeSessionSpy import NexposeSessionSpy, SpyFactory
 from future import standard_library
 standard_library.install_aliases()

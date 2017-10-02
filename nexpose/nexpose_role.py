@@ -3,7 +3,7 @@ from __future__ import (absolute_import, division, print_function,
                         unicode_literals)
 from builtins import object
 from copy import deepcopy
-from xml_utils import create_element, get_attribute, get_content_of, get_children_of
+from .xml_utils import create_element, get_attribute, get_content_of, get_children_of
 from future import standard_library
 standard_library.install_aliases()
 

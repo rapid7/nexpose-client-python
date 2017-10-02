@@ -1,9 +1,9 @@
 # Future Imports for py2/3 backwards compat.
 from __future__ import (absolute_import, division, print_function,
                         unicode_literals)
-from json_utils import JSON
-from nexpose_criteria import Criteria, Criterion
-from nexpose_asset import AssetBase
+from .json_utils import JSON
+from .nexpose_criteria import Criteria, Criterion
+from .nexpose_asset import AssetBase
 import json
 from future import standard_library
 standard_library.install_aliases()

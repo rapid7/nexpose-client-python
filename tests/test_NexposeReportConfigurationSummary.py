@@ -3,8 +3,7 @@ from __future__ import (absolute_import, division, print_function,
                         unicode_literals)
 from .load_unittest import unittest
 from .LoadFixture import CreateEmptyFixture, LoadFixture, XML, JSON
-from .context import nexpose
-from nexpose import ReportStatus, ReportConfigurationSummary, ReportSummary
+from nexpose.nexpose_report import ReportStatus, ReportConfigurationSummary, ReportSummary
 from future import standard_library
 standard_library.install_aliases()
 

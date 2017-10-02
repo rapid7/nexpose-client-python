@@ -6,17 +6,13 @@ from __future__ import (absolute_import, division, print_function,
 from builtins import map
 from builtins import input
 from builtins import range
-from fix_path import make_dlnexpose_importable
 from time import sleep
 from io import BytesIO
 from zipfile import ZipFile
 import sslfix
-import nexpose as nexpose
+import nexpose.nexpose as nexpose
 from future import standard_library
 standard_library.install_aliases()
-make_dlnexpose_importable()
-
-as_string = nexpose.as_string  # for testing only
 
 
 def xrange_as_customstr(xrange_object):
@@ -724,7 +720,7 @@ def main():
     #DemonstrateVulnerabilityAPI()
     #DemonstrateVulnerabilityExceptionAPI()
     #DemonstrateRoleAPI()
-    #DemonstrateSiteAPI()
+    DemonstrateSiteAPI()
     #DemonstrateEngineAPI()
     #DemonstrateDiscoveryConnectionAPI()
     #DemonstrateScanPI()

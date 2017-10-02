@@ -4,9 +4,9 @@ from __future__ import (absolute_import, division, print_function,
 from builtins import object
 import sys
 from future import standard_library
-from json_utils import JSON
-from nexpose_criteria_fields import *  # this will also import the operators and the constants
-from python_utils import is_iterable, is_subclass_of
+from .json_utils import JSON
+from .nexpose_criteria_fields import *  # this will also import the operators and the constants
+from .python_utils import is_iterable, is_subclass_of
 standard_library.install_aliases()
 _current_module = sys.modules[__name__]
 _all_uppercase_names = [name for name in dir(_current_module) if name.isupper()]

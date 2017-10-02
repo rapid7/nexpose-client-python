@@ -2,7 +2,7 @@
 from __future__ import (absolute_import, division, print_function,
                         unicode_literals)
 from builtins import object
-from json_utils import get_id as _get_id, HasID, JSON
+from .json_utils import get_id as _get_id, HasID, JSON
 from future import standard_library
 standard_library.install_aliases()
 

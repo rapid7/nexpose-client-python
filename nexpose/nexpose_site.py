@@ -2,7 +2,7 @@
 from __future__ import (absolute_import, division, print_function,
                         unicode_literals)
 from builtins import object
-from xml_utils import get_attribute, get_content_of, get_children_of, create_element, as_string, as_xml, get_element
+from .xml_utils import get_attribute, get_content_of, get_children_of, create_element, as_string, as_xml, get_element
 from future import standard_library
 standard_library.install_aliases()
 

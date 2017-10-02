@@ -3,8 +3,8 @@ from __future__ import (absolute_import, division, print_function,
                         unicode_literals)
 # Auto-created by 'create_credential_code.py'
 from builtins import object
-from xml_utils import create_element, get_content_of
-from python_utils import is_subclass_of
+from .xml_utils import create_element, get_content_of
+from .python_utils import is_subclass_of
 import sys
 from future import standard_library
 standard_library.install_aliases()

@@ -3,8 +3,7 @@ from __future__ import (absolute_import, division, print_function,
                         unicode_literals)
 from .load_unittest import unittest
 from .LoadFixture import LoadFixture, JSON
-from .context import nexpose
-from nexpose import Node
+from nexpose.nexpose_node import Node
 from future import standard_library
 standard_library.install_aliases()
 
