@@ -598,8 +598,12 @@ class NexposeSession_APIv1d1(NexposeSessionBase):
         """
         return self.ExecuteBasicOnReportConfiguration("ReportConfigRequest", reportconfiguration_id)
 
-    def RequestReportSave(self):
-        raise NotImplementedError()  # TODO
+    def RequestReportSave(self, report_configuration, generate_now=False):
+        """
+        Save a report configuration and optionally generate a report immediately.
+        This function will return a single ReportSaveResponse XML object (API 1.1).
+        """
+        return self.ExecuteBasicWithElement('ReportSaveRequest', {'generate-now': 1 if generate_now else 0}, report_configuration)
 
     def RequestReportGenerate(self, reportconfiguration_id):
         """
@@ -1969,7 +1973,7 @@ class NexposeSession(NexposeSession_APIv1d2):
             report_or_configuration_or_id = report_or_configuration_or_id.configuration_id
         response = self.VerifySuccess(self.RequestReportConfig(report_or_configuration_or_id))
         element = get_element(response, 'ReportConfig')
-        return ReportConfigurationSummary.CreateFromXML(element)  # TODO: THIS MUST BE A FULL CONFIGURATION
+        return ReportConfiguration.CreateFromXML(element)  # TODO: THIS MUST BE A FULL CONFIGURATION
 
     def GetReportHistory(self, reportconfiguration_or_id):
         """
@@ -2047,6 +2051,16 @@ class NexposeSession(NexposeSession_APIv1d2):
         assert data[0] == data[-1][:-2]
         body = ''.join(data[4:-1])
         return as_xml(base64.urlsafe_b64decode(body))
+
+    def SaveReportConfiguration(self, report_configuration, generate_now=False):
+        """
+        Save the configuration of a report and return the id of the saved report config.
+        If successful, the id will also have been updated in the provided ReportConfiguration object.
+        To create a new report, specify -1 as id.
+        """
+        # TODO: how to pass generate_now param downstream?
+        self._RequireInstanceOf(report_configuration, ReportConfiguration)
+        return self._ExecuteSave(self.RequestReportSave, report_configuration, 'ReportSaveResponse', 'reportcfg-id')
 
     #
     # The following functions implement the Role Management API:

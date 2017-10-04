@@ -91,7 +91,7 @@ class AdhocReportConfiguration(_ReportConfigurationBase):
         for vuln_filter in ['vulnerable-exploited', 'vulnerable-version', 'potential']:
             self.add_filter('vuln-status', vuln_filter)
 
-    def as_xml(self):
+    def AsXML(self):
         attributes = {'name': self.name, 'template-id': self.template_id, 'format': self.format}
         if self.owner:
             attributes['owner'] = self.owner
@@ -116,12 +116,21 @@ class AdhocReportConfiguration(_ReportConfigurationBase):
 
 class ReportConfiguration(AdhocReportConfiguration):
     @staticmethod
-    def create_from_xml(xml_data):
+    def CreateFromXML(xml_data):
         template_id = get_attribute(xml_data, 'template-id')
         name = get_attribute(xml_data, 'name')
         format = get_attribute(xml_data, 'format')
+        id = get_attribute(xml_data, 'id')
+        owner = get_attribute(xml_data, 'owner')
+        timezone = get_attribute(xml_data, 'timezone')
 
-        return ReportConfiguration(name, template_id, format)
+        cfg = ReportConfiguration(name, template_id, format, id, owner, timezone)
+        filters = [Filter.CreateFromXML(filter) for filter in get_children_of(xml_data, 'Filters')]
+        cfg.filters = filters
+
+        # TODO: draw the rest of the owl
+
+        return cfg
 
     def _initialze_from_xml(self, xml_data):
         self.template_id = get_attribute(xml_data, 'template-id', self.template_id)
@@ -153,7 +162,7 @@ class ReportConfiguration(AdhocReportConfiguration):
         self.dbexport = None  # TODO: needs DBExport class implemented
         self.credentials = None  # TODO: needs ExportCredential class implemented
 
-    def as_xml(self):
+    def AsXML(self, exclude_id=False):
         attributes = {'id': self.id, 'name': self.name, 'template-id': self.template_id, 'format': self.format}
         if self.owner:
             attributes['owner'] = self.owner
@@ -229,7 +238,13 @@ class Filter:
         self.id = id
 
     def as_xml(self):
-        return create_element('filter', {self.type: self.id})
+        return create_element('filter', {'type': self.type, 'id': self.id})
+
+    @staticmethod
+    def CreateFromXML(xml_data):
+        type = get_attribute(xml_data, 'type')
+        id = get_attribute(xml_data, 'id')
+        return Filter(type, id)
 
 
 class Schedule:

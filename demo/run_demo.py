@@ -11,6 +11,7 @@ from io import BytesIO
 from zipfile import ZipFile
 import sslfix
 import nexpose.nexpose as nexpose
+from nexpose.xml_utils import as_string, as_xml
 from future import standard_library
 standard_library.install_aliases()
 
@@ -677,6 +678,24 @@ def DemonstrateTicketAPI():
             print("      Comment:", repr(event.comment))
 
 
+def DemonstrateReportAPI():
+    print('Report API')
+    print('----------')
+    report = nexpose.ReportConfiguration('Python API Client Test Report', 'audit-report', 'raw-xml-v2')
+    report.add_common_vuln_filters()
+    print('Saving report configuration...')
+    print(as_string(report.AsXML()))
+    resp = session.SaveReportConfiguration(report)
+    print('Saved Report ID: {}'.format(resp))
+
+    print('Loading report configuration with ID {}...'.format(resp))
+    loaded_report = session.GetReportConfigurationDetails(resp)
+    print(as_string(loaded_report.AsXML()))
+
+    print('Deleting report configuration with ID {}...'.format(resp))
+    session.DeleteReportConfiguration(resp)
+    print('Done with Report API demo.')
+
 def GetNexposeLoginSettings():
     """
     Returns a list with following information: hostname_or_ip, port, username, password.
@@ -720,13 +739,14 @@ def main():
     #DemonstrateVulnerabilityAPI()
     #DemonstrateVulnerabilityExceptionAPI()
     #DemonstrateRoleAPI()
-    DemonstrateSiteAPI()
+    #DemonstrateSiteAPI()
     #DemonstrateEngineAPI()
     #DemonstrateDiscoveryConnectionAPI()
     #DemonstrateScanPI()
     #DemonstrateUserAPI()
     #DemonstrateAssetGroupAPI()
     #DemonstrateTicketAPI()
+    DemonstrateReportAPI()
 
     #print session.GenerateScanReport(1)
 
