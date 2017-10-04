@@ -48,7 +48,6 @@ def as_string(xml_data):
 
 
 def from_large_string(s):
-    parser = etree.XMLParser(huge_tree=True)
     return etree.XML(s.encode('utf-8'))
 
 
