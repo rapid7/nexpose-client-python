@@ -48,8 +48,7 @@ def as_string(xml_data):
 
 
 def from_large_string(s):
-    parser = etree.XMLParser(huge_tree=True)
-    return etree.parse(StringIO(s), parser).getroot()
+    return etree.XML(s.encode('utf-8'))
 
 
 # TODO: when downloading reports we shouldn't use XML, the from_large_string should only be needed in rare cases
