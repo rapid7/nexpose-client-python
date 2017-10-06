@@ -12,23 +12,23 @@ standard_library.install_aliases()
 def xrange_inclusive(start, included_stop):
     return range(start, included_stop + 1)
 
+class MetaNex(type):
+    @property
+    def Code(cls):
+        return cls._Code if cls._Code else cls.Name
 
-class NexposeCriteriaField(object):
+    @property
+    def Name(cls):
+        return cls.__name__
+
+    def __str__(cls):
+        return cls.Name
+
+
+class NexposeCriteriaField(object, metaclass=MetaNex): # python 3
     _Code = None
     ValidOperators = []  # Note: this list shouldn't be empty
     ValidValues = None  # None indicates that any value is accepted
-
-    class __metaclass__(type):
-        @property
-        def Code(cls):
-            return cls._Code if cls._Code else cls.Name
-
-        @property
-        def Name(cls):
-            return cls.__name__
-
-        def __str__(cls):
-            return cls.Name
 
 
 class ASSET(NexposeCriteriaField):
