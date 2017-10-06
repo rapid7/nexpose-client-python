@@ -26,7 +26,7 @@ class MetaNex(type):
         return cls.Name
 
 
-class NexposeCriteriaField(object, metaclass=MetaNex):  # python 3
+class NexposeCriteriaField(object, metaclass=MetaNex):  # flake8: noqa: E999
     _Code = None
     ValidOperators = []  # Note: this list shouldn't be empty
     ValidValues = None  # None indicates that any value is accepted
