@@ -7,6 +7,7 @@ from future.utils import with_metaclass
 
 standard_library.install_aliases()
 
+
 class MetaNexposeCriteriaOperator(type):
     @property
     def Code(cls):
