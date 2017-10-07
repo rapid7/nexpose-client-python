@@ -3,17 +3,21 @@ from __future__ import (absolute_import, division, print_function,
                         unicode_literals)
 from builtins import object
 from future import standard_library
+from future.utils import with_metaclass
+
 standard_library.install_aliases()
 
+class MetaNexposeCriteriaOperator(type):
+    @property
+    def Code(cls):
+        return cls.__name__
 
-class NexposeCriteriaOperator(object):
-    class __metaclass__(type):
-        @property
-        def Code(cls):
-            return cls.__name__
+    def __str__(cls):
+        return cls.Code
 
-        def __str__(cls):
-            return cls.Code
+
+class NexposeCriteriaOperator(with_metaclass(MetaNexposeCriteriaOperator, object)):
+    pass
 
 
 class AND(NexposeCriteriaOperator):
