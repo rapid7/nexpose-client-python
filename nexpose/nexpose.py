@@ -105,7 +105,7 @@ def ExecuteWithPostData_FORM(session_id, uri, sub_url, timeout, post_data):
         post_data = as_string(post_data)
     else:
         headers["Content-Type"] = "application/x-www-form-urlencoded; charset=UTF-8"
-        post_data = urllib.parse.urlencode(utf8_encoded(post_data))
+        post_data = urllib.parse.urlencode(utf8_encoded(post_data)).encode(encoding="utf-8")
     return ExecuteWebRequest(uri + sub_url, post_data, headers, timeout, lambda: 'POST')
 
 
@@ -1221,7 +1221,7 @@ class NexposeSession(NexposeSession_APIv1d2):
         parameters = dict(extra_parameters)
         parameters['cmd'] = command
         parameters['targetTask'] = target_task
-        result = self.ExecuteFormPost('admin/global/maintenance/maintCmd.txml', parameters)
+        result = self.ExecuteFormPost('data/maintenance/command', parameters)
         return _HasSucceeded(result)
 
     def ExecuteMaintenanceCommandAndRestartOnSuccess(self, target_task, command, extra_parameters):
