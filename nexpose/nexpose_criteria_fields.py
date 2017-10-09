@@ -6,6 +6,7 @@ from builtins import object
 from .nexpose_criteria_operators import *
 from .nexpose_criteria_constants import *
 from future import standard_library
+from future.utils import with_metaclass
 standard_library.install_aliases()
 
 
@@ -13,22 +14,23 @@ def xrange_inclusive(start, included_stop):
     return range(start, included_stop + 1)
 
 
-class NexposeCriteriaField(object):
+class MetaNexposeCriteriaField(type):
+    @property
+    def Code(cls):
+        return cls._Code if cls._Code else cls.Name
+
+    @property
+    def Name(cls):
+        return cls.__name__
+
+    def __str__(cls):
+        return cls.Name
+
+
+class NexposeCriteriaField(with_metaclass(MetaNexposeCriteriaField, object)):
     _Code = None
     ValidOperators = []  # Note: this list shouldn't be empty
     ValidValues = None  # None indicates that any value is accepted
-
-    class __metaclass__(type):
-        @property
-        def Code(cls):
-            return cls._Code if cls._Code else cls.Name
-
-        @property
-        def Name(cls):
-            return cls.__name__
-
-        def __str__(cls):
-            return cls.Name
 
 
 class ASSET(NexposeCriteriaField):
