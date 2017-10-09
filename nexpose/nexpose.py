@@ -1607,9 +1607,10 @@ class NexposeSession(NexposeSession_APIv1d2):
 
         # Because of a bug in the API not all expected information is returned in the UserConfiguration object
         # Retrieve the information using an undocumented method
-        xml_data = self.ExecuteGet('ajax/user_config.txml', {'userid': user_or_id})
-        config.has_access_to_all_sites = get_attribute(xml_data, 'allSites') == 'true'
-        config.has_access_to_all_assetgroups = get_attribute(xml_data, 'allGroups') == 'true'
+        xml_data = self.ExecuteGet('/data/user/configuration', {'userid': user_or_id})
+        user = xml_data.find('User')
+        config.has_access_to_all_sites = user.attrib['allSites']
+        config.has_access_to_all_assetgroups = user.attrib['allGroups']
         config.accessible_sites = [int(get_attribute(xml_site, 'id')) for xml_site in xml_data.findall('Sites/site')]
         config.accessible_assetgroups = [int(get_attribute(xml_assetgroup, 'id')) for xml_assetgroup in xml_data.findall('Groups/group')]  # Groups/group or Groups/Group
 
