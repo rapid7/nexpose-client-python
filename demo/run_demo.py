@@ -698,7 +698,6 @@ def DemonstrateReportAPI():
     schedule = Schedule('weekly', 1, "20171105T164239700")
     freq = Frequency(False, True, schedule)
     report.frequency = freq
-    report.owner = 1
     report.timezone = 'America/Los_Angeles'
 
     print('Saving report configuration...')
@@ -760,7 +759,7 @@ def main():
     #DemonstrateUserAPI()
     #DemonstrateAssetGroupAPI()
     #DemonstrateTicketAPI()
-    DemonstrateReportAPI()
+    #DemonstrateReportAPI()
 
     #print session.GenerateScanReport(1)
 
