@@ -24,7 +24,7 @@ from .nexpose_discoveryconnection import DiscoveryConnectionProtocol, DiscoveryC
 from .nexpose_engine import EngineStatus, EnginePriority, EngineBase, EngineSummary, EngineConfiguration
 from .nexpose_node import NodeScanStatus, NodeBase, Node
 from .nexpose_privileges import AssetGroupPrivileges, GlobalPrivileges, SitePrivileges
-from .nexpose_report import ReportStatus, ReportTemplate, ReportConfigurationSummary, ReportConfiguration, ReportSummary
+from .nexpose_report import AdhocReportConfiguration, ReportStatus, ReportTemplate, ReportConfigurationSummary, ReportConfiguration, ReportSummary
 from .nexpose_role import RoleScope, RoleSummary, RoleDetails
 from .nexpose_scansummary import VulnerabilityStatus, ScanStatus, ScanSummary, ScanSummaryNodeCounts, ScanSummaryTaskCounts, ScanSummaryVulnerability
 from .nexpose_site import Host, Range, SiteBase, SiteSummary, SiteConfiguration
@@ -624,6 +624,13 @@ class NexposeSession_APIv1d1(NexposeSessionBase):
         else:
             return self.ExecuteBasicOnReport("ReportDeleteRequest", report_id)
 
+    def RequestAdhocReport(self, report_config):
+        """
+        Generate a new report using the specified report configuration (definition).
+        This function will return a single ReportGenerateResponse XML object (API 1.1).
+        """
+        return self.ExecuteBasicWithElement('ReportAdhocGenerateRequest', {}, as_xml(report_config))
+
     def RequestReportAdhocGenerate(self, id):
         request = """
 <AdhocReportConfig format="raw-xml-v2" template-id="audit-report">
@@ -633,7 +640,6 @@ class NexposeSession_APIv1d1(NexposeSessionBase):
 </AdhocReportConfig>
 """
         return self.ExecuteBasicWithElement("ReportAdhocGenerateRequest", {}, as_xml(request.format(id)))
-        raise NotImplementedError()  # TODO
 
     #
     # The following functions implement the User Management API:
@@ -2051,6 +2057,23 @@ class NexposeSession(NexposeSession_APIv1d2):
         assert data[0] == data[-1][:-2]
         body = ''.join(data[4:-1])
         return as_xml(base64.urlsafe_b64decode(body))
+
+    def GenerateAdHocReport(self, adhoc_report_configuration):
+        """
+        Generate adhoc report and return decoded contents.
+        """
+        # TODO: add optional filename param to store the report to disk instead of memory
+        self._RequireInstanceOf(adhoc_report_configuration, AdhocReportConfiguration)
+        data = self.RequestAdhocReport(adhoc_report_configuration.AsXML())
+        data = self.VerifySuccess(data)
+        # TODO: figure out a way to handle this safely/correctly for different formats
+        data = data.tail.replace('\r', '').strip().split('\n')
+        # assert data[1] == 'Content-Type: text/xml; name=report.xml'
+        assert data[2] == 'Content-Transfer-Encoding: base64'
+        assert data[3] == ''
+        assert data[0] == data[-1][:-2]
+        body = ''.join(data[4:-1])
+        return base64.urlsafe_b64decode(body)
 
     def SaveReportConfiguration(self, report_configuration, generate_now=False):
         """
