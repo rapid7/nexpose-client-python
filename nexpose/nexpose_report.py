@@ -1,8 +1,7 @@
 # Future Imports for py2/3 backwards compat.
-from __future__ import (absolute_import, division, print_function,
-                        unicode_literals)
+from __future__ import (absolute_import, division, print_function, unicode_literals)
 from builtins import object
-from .xml_utils import get_attribute, get_content_of, get_children_of, create_element, as_string, as_xml, get_element
+from .xml_utils import create_element, get_attribute, get_content_of, get_children_of, get_element
 from future import standard_library
 standard_library.install_aliases()
 
@@ -88,7 +87,7 @@ class AdhocReportConfiguration(_ReportConfigurationBase):
         self.filters.append(Filter(type, id))
 
     def add_common_vuln_filters(self):
-        for vuln_filter in ['vulnerable-exploited', 'vulnerable-version', 'potential']:
+        for vuln_filter in ['potential', 'vulnerable-version', 'vulnerable-exploited']:
             self.add_filter('vuln-status', vuln_filter)
 
     def AsXML(self):
@@ -102,7 +101,7 @@ class AdhocReportConfiguration(_ReportConfigurationBase):
 
         xml_filters = create_element('Filters')
         for report_filter in self.filters:
-            xml_filters.append(report_filter.as_xml())
+            xml_filters.append(report_filter.AsXML())
         xml_data.append(xml_filters)
 
         if self.baseline:
@@ -126,15 +125,25 @@ class ReportConfiguration(AdhocReportConfiguration):
 
         cfg = ReportConfiguration(name, template_id, format, id, owner, timezone)
         filters = [Filter.CreateFromXML(filter) for filter in get_children_of(xml_data, 'Filters')]
-        cfg.filters = filters
+        cfg.filters = filters if filters is not None else []
+
+        baseline = get_element(xml_data, 'Baseline')
+        cfg.baseline = get_attribute(baseline, 'compareTo')
+
+        users = [get_attribute(user, 'id') for user in get_children_of(xml_data, 'Users')]
+        cfg.users = users if users is not None else []
+
+        frequency = get_element(xml_data, 'Generate')
+        if frequency is not None:
+            cfg.frequency = Frequency.CreateFromXML(frequency)
+
+        delivery = get_element(xml_data, 'Delivery')
+        if delivery is not None:
+            cfg.delivery = Delivery.CreateFromXML(delivery)
 
         # TODO: draw the rest of the owl
 
         return cfg
-
-    def _initialze_from_xml(self, xml_data):
-        self.template_id = get_attribute(xml_data, 'template-id', self.template_id)
-        self.name = get_attribute(xml_data, 'name', self.name)
 
     def __init__(self, name, template_id, format, id=-1, owner=None, timezone=None):
         """
@@ -173,7 +182,7 @@ class ReportConfiguration(AdhocReportConfiguration):
 
         xml_filters = create_element('Filters')
         for report_filter in self.filters:
-            xml_filters.append(report_filter.as_xml())
+            xml_filters.append(report_filter.AsXML())
 
         xml_data.append(xml_filters)
 
@@ -190,10 +199,10 @@ class ReportConfiguration(AdhocReportConfiguration):
         xml_data.append(xml_users)
 
         if self.frequency:
-            xml_data.append(self.frequency.as_xml())
+            xml_data.append(self.frequency.AsXML())
 
         if self.delivery:
-            xml_data.append(self.delivery.as_xml())
+            xml_data.append(self.delivery.AsXML())
 
         if self.dbexport:
             pass  # TODO needs DBExport class implemented
@@ -237,7 +246,7 @@ class Filter:
         self.type = type
         self.id = id
 
-    def as_xml(self):
+    def AsXML(self):
         return create_element('filter', {'type': self.type, 'id': self.id})
 
     @staticmethod
@@ -262,18 +271,25 @@ class Schedule:
         self.interval = interval
         self.start = start  # TODO make sure this value is formatted correctly to: yyyyMMdd'T'HHmmssSSS
 
-    def as_xml(self):
+    def AsXML(self):
         attributes = {'type': self.type, 'interval': self.interval, 'start': self.start}
         return create_element('Schedule', attributes)
+
+    @staticmethod
+    def CreateFromXML(xml_data):
+        type = get_attribute(xml_data, 'type')
+        interval = get_attribute(xml_data, 'interval')
+        start = get_attribute(xml_data, 'start')
+        return Schedule(type, interval, start)
 
 
 class Frequency:
     def __init__(self, after_scan=False, scheduled=False, schedule=None):
         """
 
-        :param after_scan: Whether or not to generate after scan completes on any in-scope assets, sites, groups, or tags
+        :param after_scan: Whether to generate after scan completes on any in-scope assets, sites, groups, or tags
         :type after_scan: bool
-        :param scheduled: Whether or not to generate this report on a schedule (cannot be used with after_scan)
+        :param scheduled: Whether to generate this report on a schedule (cannot be used with after_scan)
         :type scheduled: bool
         :param schedule: The schedule for recurring report generation
         :type schedule: Schedule
@@ -282,12 +298,21 @@ class Frequency:
         self.scheduled = scheduled
         self.schedule = schedule
 
-    def as_xml(self):
+    def AsXML(self):
         attributes = {'after-scan': 1 if self.after_scan else 0, 'schedule': 1 if self.schedule else 0}
         xml_data = create_element('Generate', attributes)
         if self.schedule:
-            xml_data.append(self.schedule.as_xml())
+            xml_data.append(self.schedule.AsXML())
         return xml_data
+
+    @staticmethod
+    def CreateFromXML(xml_data):
+        after_scan = get_attribute(xml_data, 'after-scan')
+        schedule_enabled = get_attribute(xml_data, 'schedule')
+        schedule_xml = get_element(xml_data, 'Schedule')
+        schedule = Schedule.CreateFromXML(schedule_xml) if schedule_xml is not None else None
+        truthy = [1, '1', 'true', 'True', 'TRUE']
+        return Frequency(after_scan in truthy, schedule_enabled in truthy, schedule)
 
 
 class Email:
@@ -311,7 +336,7 @@ class Email:
         self.smtp_relay_server = None
         self.recipients = []
 
-    def as_xml(self):
+    def AsXML(self):
         attributes = {'toAllAuthorized': 1 if self.to_all_authorized else 0}
         if self.send_to_owner_as:
             attributes['sendToOwnerAs'] = self.send_to_owner_as
@@ -342,6 +367,20 @@ class Email:
 
         return xml_data
 
+    @staticmethod
+    def CreateFromXML(xml_data):
+        to_all_authorized = get_attribute(xml_data, 'toAllAuthorized')
+        send_to_owner_as = get_attribute(xml_data, 'sendToOwnerAs')
+        send_to_acl_as = get_attribute(xml_data, 'sendToAclAs')
+        send_as = get_attribute(xml_data, 'sendAs')
+        truthy = [1, '1', 'true', 'True', 'TRUE']
+        email = Email(to_all_authorized in truthy, send_to_owner_as, send_to_acl_as, send_as)
+        email.sender = get_content_of(xml_data, 'Sender')
+        email.smtp_relay_server = get_content_of(xml_data, 'SmtpRelayServer')
+        recipients = [recipient.text for recipient in get_children_of(xml_data, 'Recipients')]
+        email.recipients = recipients if recipients else []
+        return email
+
 
 class Delivery:
     def __init__(self, store_on_server, location=None, email=None):
@@ -358,18 +397,29 @@ class Delivery:
         self.location = location
         self.email = email
 
-    def as_xml(self):
+    def AsXML(self):
         xml_data = create_element('Delivery')
         xml_storage = create_element('Storage', {'storeOnServer': 1 if self.store_on_server else 0})
         if self.location:
             xml_location = create_element('location')
             xml_location.text = self.location
             xml_storage.append(xml_location)
-
+        xml_data.append(xml_storage)
         if self.email:
-            xml_data.append(self.email.as_xml())
+            xml_data.append(self.email.AsXML())
 
         return xml_data
+
+    @staticmethod
+    def CreateFromXML(xml_data):
+        storage = get_element(xml_data, 'Storage')
+        store_on_server = get_attribute(storage, 'storeOnServer')
+        location_xml = get_element(xml_data, 'location')
+        location = location_xml.text if location_xml is not None else None
+        email_xml = get_element(xml_data, 'Email')
+        email = Email.CreateFromXML(email_xml) if email_xml is not None else None
+        truthy = [1, '1', 'true', 'True', 'TRUE']
+        return Delivery(store_on_server in truthy, location, email)
 
 
 # TODO: implement db export for report config
@@ -377,7 +427,7 @@ class DBExport:
     def __init__(self):
         pass
 
-    def as_xml(self):
+    def AsXML(self):
         pass
 
 
@@ -386,5 +436,5 @@ class ExportCredential:
     def __init__(self):
         pass
 
-    def as_xml(self):
+    def AsXML(self):
         pass

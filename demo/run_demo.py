@@ -11,7 +11,6 @@ from io import BytesIO
 from zipfile import ZipFile
 import sslfix
 import nexpose.nexpose as nexpose
-from nexpose.xml_utils import as_string, as_xml
 from future import standard_library
 standard_library.install_aliases()
 
@@ -681,20 +680,35 @@ def DemonstrateTicketAPI():
 def DemonstrateReportAPI():
     print('Report API')
     print('----------')
+
+    # TODO: show off more of the report API functionality than just a single config save/delete
+
     report = nexpose.ReportConfiguration('Python API Client Test Report', 'audit-report', 'raw-xml-v2')
-    report.add_common_vuln_filters()
+    report.add_filter('scan', 'last')  # this should use site/group/tag filter(s) instead of scan in real world use
+    report.add_common_vuln_filters()  # adds vuln filters to match UI defaults
+
+    # these imports should be at the top, or perhaps be auto imports in the init file?
+    from nexpose.nexpose_report import Email, Delivery, Frequency, Schedule
+    email = Email(True, send_as='file')
+    email.smtp_relay_server = 'whatever.example.com'
+    email.sender = 'whatever@example.com'
+    email.recipients.append('someone@example.com')
+    delivery = Delivery(True, None, email)
+    report.delivery = delivery
+    schedule = Schedule('weekly', 1, "20171105T164239700")
+    freq = Frequency(False, True, schedule)
+    report.frequency = freq
+    report.owner = 1
+    report.timezone = 'America/Los_Angeles'
+
     print('Saving report configuration...')
-    print(as_string(report.AsXML()))
     resp = session.SaveReportConfiguration(report)
     print('Saved Report ID: {}'.format(resp))
-
-    print('Loading report configuration with ID {}...'.format(resp))
-    loaded_report = session.GetReportConfigurationDetails(resp)
-    print(as_string(loaded_report.AsXML()))
 
     print('Deleting report configuration with ID {}...'.format(resp))
     session.DeleteReportConfiguration(resp)
     print('Done with Report API demo.')
+
 
 def GetNexposeLoginSettings():
     """
