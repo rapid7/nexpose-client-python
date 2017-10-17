@@ -1,11 +1,10 @@
 # Future Imports for py2/3 backwards compat.
-from __future__ import (absolute_import, division, print_function,
-                        unicode_literals)
+from __future__ import (absolute_import, division, print_function, unicode_literals)
 from builtins import object
-from .xml_utils import get_attribute, create_element
-from urllib.parse import urlparse
 from future import standard_library
 standard_library.install_aliases()
+from .xml_utils import get_attribute, create_element
+from urllib.parse import urlparse
 
 
 class DiscoveryConnectionProtocol(object):
