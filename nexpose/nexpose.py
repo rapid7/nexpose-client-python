@@ -1,13 +1,11 @@
 # Future Imports for py2/3 backwards compat.
-from __future__ import (absolute_import, division, print_function,
-                        unicode_literals)
+from __future__ import (absolute_import, division, print_function, unicode_literals)
 from builtins import object
+from future import standard_library
+standard_library.install_aliases()
 import urllib.request
 import urllib.parse
 import urllib.error
-import urllib.request
-import urllib.error
-import urllib.parse
 import base64
 import json
 from .json_utils import load_urls
@@ -39,8 +37,6 @@ from .nexpose_userauthenticator import UserAuthenticatorSummary
 from .nexpose_vulnerability import VulnerabilityReference, VulnerabilitySummary, VulnerabilityDetail
 from .nexpose_vulnerabilityexception import VulnerabilityExceptionStatus, VulnerabilityExceptionReason, VulnerabilityExceptionScope, SiloVulnerabilityExceptionDetails, VulnerabilityException
 from . import nexpose_criteria as Criteria
-from future import standard_library
-standard_library.install_aliases()
 
 DEFAULT_BLOCK_SIZE = 32768
 
