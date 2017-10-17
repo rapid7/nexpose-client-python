@@ -1,5 +1,21 @@
 # Change Log
 
+## [0.1.6](https://github.com/rapid7/nexpose-client-python/tree/0.1.6) (2017-10-17)
+[Full Changelog](https://github.com/rapid7/nexpose-client-python/compare/0.1.5...0.1.6)
+
+**Fixed bugs:**
+
+- ImportError: No module named request [\#40](https://github.com/rapid7/nexpose-client-python/issues/40)
+- Fix things that stopped working after py3 updates [\#32](https://github.com/rapid7/nexpose-client-python/issues/32)
+- Bug: DemonstrateCriteriaAPI\(\) + DemonstrateAssetFilterAPI\(\) [\#36](https://github.com/rapid7/nexpose-client-python/pull/36) ([grobinson-r7](https://github.com/grobinson-r7))
+- Bug: DemonstrateBackupAPI\(\) + DemonstrateSharedCredentialsAPI\(\)  [\#35](https://github.com/rapid7/nexpose-client-python/pull/35) ([grobinson-r7](https://github.com/grobinson-r7))
+- Bug: DemonstrateUserAPI\(\) [\#34](https://github.com/rapid7/nexpose-client-python/pull/34) ([grobinson-r7](https://github.com/grobinson-r7))
+- Bug: DemonstrateVulnerabilityAPI\(\)  [\#31](https://github.com/rapid7/nexpose-client-python/pull/31) ([grobinson-r7](https://github.com/grobinson-r7))
+
+**Merged pull requests:**
+
+- Fix urllib imports by installing futures aliases earlier [\#41](https://github.com/rapid7/nexpose-client-python/pull/41) ([gschneider-r7](https://github.com/gschneider-r7))
+
 ## [0.1.5](https://github.com/rapid7/nexpose-client-python/tree/0.1.5) (2017-10-02)
 [Full Changelog](https://github.com/rapid7/nexpose-client-python/compare/0.1.4...0.1.5)
 
