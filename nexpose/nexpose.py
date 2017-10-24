@@ -596,7 +596,8 @@ class NexposeSession_APIv1d1(NexposeSessionBase):
         Retreive the detailed report configuration (definition) of the specified report configuration.
         This function will return a single ReportConfigResponse XML object (API 1.1).
         """
-        return self.ExecuteBasicOnReportConfiguration("ReportConfigRequest", reportconfiguration_id)
+        response = self.ExecuteBasicOnReportConfiguration("ReportConfigRequest", reportconfiguration_id)
+        return get_element(response, 'ReportConfig')
 
     def RequestReportSave(self, report_configuration, generate_now=False):
         """
@@ -2081,9 +2082,13 @@ class NexposeSession(NexposeSession_APIv1d2):
         If successful, the id will also have been updated in the provided ReportConfiguration object.
         To create a new report, specify -1 as id.
         """
-        # TODO: how to pass generate_now param downstream?
         self._RequireInstanceOf(report_configuration, ReportConfiguration)
-        return self._ExecuteSave(self.RequestReportSave, report_configuration, 'ReportSaveResponse', 'reportcfg-id')
+        response = self.RequestReportSave(report_configuration.AsXML(exclude_id=False), generate_now)
+        self.VerifySuccess(response)
+        report_cfg_id = int(get_attribute(response, 'reportcfg-id'))
+        report_configuration.id = report_cfg_id
+        return report_cfg_id
+
 
     #
     # The following functions implement the Role Management API:

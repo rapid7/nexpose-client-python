@@ -71,14 +71,14 @@ class ReportConfigurationSummary(_ReportBase, _ReportConfigurationBase):
 
 
 class AdhocReportConfiguration(_ReportConfigurationBase):
-    def __init__(self, template_id, format, site_id=None, owner=None, timezone=None):
+    def __init__(self, template_id, format, site_id=None, owner=None, timezone=None, language=None, baseline=None):
         _ReportConfigurationBase.__init__(self, template_id)
         self.format = format
         self.owner = owner
         self.timezone = timezone
-        self.language = None
+        self.language = language
         self.filters = []
-        self.baseline = None
+        self.baseline = baseline
 
         if site_id:
             self.add_filter('site', site_id)
@@ -96,6 +96,8 @@ class AdhocReportConfiguration(_ReportConfigurationBase):
             attributes['owner'] = self.owner
         if self.timezone:
             attributes['timezone'] = self.timezone
+        if self.language:
+            attributes['language'] = self.language
 
         xml_data = create_element('AdhocReportConfig', attributes)
 
@@ -177,6 +179,8 @@ class ReportConfiguration(AdhocReportConfiguration):
             attributes['owner'] = self.owner
         if self.timezone:
             attributes['timezone'] = self.timezone
+        if self.language:
+            attributes['language'] = self.language
 
         xml_data = create_element('ReportConfig', attributes)
 
@@ -226,9 +230,13 @@ class Filter:
         - cyberscope-component
         - cyberscope-bureau
         - cyberscope-enclave
+        - query
+        - version
 
         For site, group, device, tag, and scan the ID is the numeric ID.
         For scan, the ID can also be "last" for the most recently run scan.
+        For SQL Query Export, the query value should be the SQL query as a string. The version value should be the
+        Reporting Data Model version as a string, e.g. '2.3.0'. Both filters must be applied to the report config.
         For vuln-status, the ID can have one of the following values:
 
         1. vulnerable-exploited (The check was positive. An exploit verified the vulnerability.)

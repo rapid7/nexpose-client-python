@@ -1,0 +1,169 @@
+interactions:
+- request:
+    body: <LoginRequest user-id="nxadmin" password="nxadmin"/>
+    headers:
+      Connection: [close]
+      Content-Length: ['56']
+      Content-Type: [text/xml]
+      Host: ['localhost:3780']
+      User-Agent: [Python-urllib/3.6]
+    method: POST
+    uri: https://localhost:3780/api/1.1/xml
+  response:
+    body: {string: '<LoginResponse success="1" session-id="C949AAFB1DDF91B1865A4471F9E53A79D186B526"/>
+
+        '}
+    headers:
+      Cache-Control: ['no-store, must-revalidate']
+      Connection: [close]
+      Content-Length: ['83']
+      Content-Type: [application/xml;charset=UTF-8]
+      Date: ['Tue, 24 Oct 2017 23:13:44 GMT']
+      Server: [Security Console]
+      Set-Cookie: [nexposeCCSessionID=C949AAFB1DDF91B1865A4471F9E53A79D186B526; Path=/;
+          Secure; HttpOnly]
+      X-Content-Type-Options: [nosniff]
+      X-Frame-Options: [SAMEORIGIN]
+      X-UA-Compatible: ['IE=edge,chrome=1']
+      X-XSS-Protection: [1; mode=block]
+    status: {code: 200, message: OK}
+- request:
+    body: <ReportSaveRequest generate-now="0" session-id="C949AAFB1DDF91B1865A4471F9E53A79D186B526"><ReportConfig
+      id="-1" name="Python API Client Test Report" template-id="audit-report" format="raw-xml-v2"
+      timezone="America/Los_Angeles"><Filters><filter type="scan" id="last"/><filter
+      type="vuln-status" id="potential"/><filter type="vuln-status" id="vulnerable-version"/><filter
+      type="vuln-status" id="vulnerable-exploited"/></Filters><Baseline/><Users/><Generate
+      after-scan="0" schedule="1"><Schedule type="weekly" interval="1" start="20171105T164239700"/></Generate><Delivery><Storage
+      storeOnServer="1"/><Email toAllAuthorized="1" sendAs="file"><Sender>whatever@example.com</Sender><SmtpRelayServer>whatever.example.com</SmtpRelayServer><Recipients><Recipient>someone@example.com</Recipient></Recipients></Email></Delivery></ReportConfig></ReportSaveRequest>
+    headers:
+      Connection: [close]
+      Content-Length: ['851']
+      Content-Type: [text/xml]
+      Host: ['localhost:3780']
+      User-Agent: [Python-urllib/3.6]
+    method: POST
+    uri: https://localhost:3780/api/1.1/xml
+  response:
+    body: {string: '<ReportSaveResponse success="1" reportcfg-id="4604"/>
+
+        '}
+    headers:
+      Cache-Control: ['no-store, must-revalidate']
+      Connection: [close]
+      Content-Length: ['54']
+      Content-Type: [application/xml;charset=UTF-8]
+      Date: ['Tue, 24 Oct 2017 23:13:44 GMT']
+      Server: [Security Console]
+      Set-Cookie: [nexposeCCSessionID=A8FCF01B7E5FE8907BD7A9D21BCA48E488E37EE3; Path=/;
+          Secure; HttpOnly]
+      X-Content-Type-Options: [nosniff]
+      X-Frame-Options: [SAMEORIGIN]
+      X-UA-Compatible: ['IE=edge,chrome=1']
+      X-XSS-Protection: [1; mode=block]
+    status: {code: 200, message: OK}
+- request:
+    body: <ReportConfigRequest reportcfg-id="4604" session-id="C949AAFB1DDF91B1865A4471F9E53A79D186B526"/>
+    headers:
+      Connection: [close]
+      Content-Length: ['96']
+      Content-Type: [text/xml]
+      Host: ['localhost:3780']
+      User-Agent: [Python-urllib/3.6]
+    method: POST
+    uri: https://localhost:3780/api/1.1/xml
+  response:
+    body: {string: '<ReportConfigResponse success="1">
+
+        <ReportConfig id="4604" name="Python API Client Test Report" template-id="audit-report"
+        format="raw-xml-v2" owner="36" timezone="America/Los_Angeles">
+
+        <Filters>
+
+        <filter type="scan" id="last"></filter>
+
+        <filter type="vuln-status" id="vulnerable-exploited">vulnerable-exploited</filter>
+
+        <filter type="vuln-status" id="vulnerable-version">vulnerable-version</filter>
+
+        <filter type="vuln-status" id="potential">potential</filter>
+
+        </Filters>
+
+        <Generate after-scan="0" schedule="1">
+
+        <Schedule type="weekly" interval="1" start="20171105T164239700"/>
+
+        </Generate>
+
+        <Users>
+
+        </Users>
+
+        <Delivery>
+
+        <Storage storeOnServer="1"/>
+
+        <Email sendAs="file" toAllAuthorized="1">
+
+        <Recipients>
+
+        <Recipient>someone@example.com</Recipient>
+
+        </Recipients>
+
+        <SmtpRelayServer>whatever.example.com</SmtpRelayServer>
+
+        <Sender>whatever@example.com</Sender>
+
+        </Email>
+
+        </Delivery>
+
+        </ReportConfig>
+
+        </ReportConfigResponse>
+
+        '}
+    headers:
+      Cache-Control: ['no-store, must-revalidate']
+      Connection: [close]
+      Content-Type: [application/xml;charset=UTF-8]
+      Date: ['Tue, 24 Oct 2017 23:13:44 GMT']
+      Server: [Security Console]
+      Set-Cookie: [nexposeCCSessionID=09F54BA2C5E305A397AD133D3F1F1B24A79CFD68; Path=/;
+          Secure; HttpOnly]
+      Vary: [Accept-Encoding]
+      X-Content-Type-Options: [nosniff]
+      X-Frame-Options: [SAMEORIGIN]
+      X-UA-Compatible: ['IE=edge,chrome=1']
+      X-XSS-Protection: [1; mode=block]
+    status: {code: 200, message: OK}
+- request:
+    body: <ReportDeleteRequest reportcfg-id="4604" session-id="C949AAFB1DDF91B1865A4471F9E53A79D186B526"/>
+    headers:
+      Connection: [close]
+      Content-Length: ['96']
+      Content-Type: [text/xml]
+      Host: ['localhost:3780']
+      User-Agent: [Python-urllib/3.6]
+    method: POST
+    uri: https://localhost:3780/api/1.1/xml
+  response:
+    body: {string: '<ReportDeleteResponse success="1"/>
+
+        '}
+    headers:
+      Cache-Control: ['no-store, must-revalidate']
+      Connection: [close]
+      Content-Length: ['36']
+      Content-Type: [application/xml;charset=UTF-8]
+      Date: ['Tue, 24 Oct 2017 23:13:44 GMT']
+      Server: [Security Console]
+      Set-Cookie: [nexposeCCSessionID=E45277AC28B78EF9C7DEAEAD4907E4A889A9B00A; Path=/;
+          Secure; HttpOnly]
+      X-Content-Type-Options: [nosniff]
+      X-Frame-Options: [SAMEORIGIN]
+      X-UA-Compatible: ['IE=edge,chrome=1']
+      X-XSS-Protection: [1; mode=block]
+    status: {code: 200, message: OK}
+version: 1

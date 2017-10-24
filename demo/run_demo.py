@@ -682,7 +682,6 @@ def DemonstrateReportAPI():
     print('----------')
 
     # TODO: show off more of the report API functionality than just a single config save/delete
-
     report = nexpose.ReportConfiguration('Python API Client Test Report', 'audit-report', 'raw-xml-v2')
     report.add_filter('scan', 'last')  # this should use site/group/tag filter(s) instead of scan in real world use
     report.add_common_vuln_filters()  # adds vuln filters to match UI defaults
