@@ -24,7 +24,7 @@ from .nexpose_discoveryconnection import DiscoveryConnectionProtocol, DiscoveryC
 from .nexpose_engine import EngineStatus, EnginePriority, EngineBase, EngineSummary, EngineConfiguration
 from .nexpose_node import NodeScanStatus, NodeBase, Node
 from .nexpose_privileges import AssetGroupPrivileges, GlobalPrivileges, SitePrivileges
-from .nexpose_report import ReportStatus, ReportTemplate, ReportConfigurationSummary, ReportConfiguration, ReportSummary
+from .nexpose_report import AdhocReportConfiguration, ReportStatus, ReportTemplate, ReportConfigurationSummary, ReportConfiguration, ReportSummary
 from .nexpose_role import RoleScope, RoleSummary, RoleDetails
 from .nexpose_scansummary import VulnerabilityStatus, ScanStatus, ScanSummary, ScanSummaryNodeCounts, ScanSummaryTaskCounts, ScanSummaryVulnerability
 from .nexpose_site import Host, Range, SiteBase, SiteSummary, SiteConfiguration
@@ -284,7 +284,7 @@ class NexposeSessionBase(object):
         try:
             response = OpenWebRequest(self._URI_root, None, {}, self.timeout)
             return NexposeStatus.GetStatusFromURL(response.geturl())
-        except:
+        except Exception:
             return NexposeStatus.UNKNOWN
 
 
@@ -596,10 +596,15 @@ class NexposeSession_APIv1d1(NexposeSessionBase):
         Retreive the detailed report configuration (definition) of the specified report configuration.
         This function will return a single ReportConfigResponse XML object (API 1.1).
         """
-        return self.ExecuteBasicOnReportConfiguration("ReportConfigRequest", reportconfiguration_id)
+        response = self.ExecuteBasicOnReportConfiguration("ReportConfigRequest", reportconfiguration_id)
+        return get_element(response, 'ReportConfig')
 
-    def RequestReportSave(self):
-        raise NotImplementedError()  # TODO
+    def RequestReportSave(self, report_configuration, generate_now=False):
+        """
+        Save a report configuration and optionally generate a report immediately.
+        This function will return a single ReportSaveResponse XML object (API 1.1).
+        """
+        return self.ExecuteBasicWithElement('ReportSaveRequest', {'generate-now': 1 if generate_now else 0}, report_configuration)
 
     def RequestReportGenerate(self, reportconfiguration_id):
         """
@@ -620,6 +625,13 @@ class NexposeSession_APIv1d1(NexposeSessionBase):
         else:
             return self.ExecuteBasicOnReport("ReportDeleteRequest", report_id)
 
+    def RequestAdhocReport(self, report_config):
+        """
+        Generate a new report using the specified report configuration (definition).
+        This function will return a single ReportGenerateResponse XML object (API 1.1).
+        """
+        return self.ExecuteBasicWithElement('ReportAdhocGenerateRequest', {}, as_xml(report_config))
+
     def RequestReportAdhocGenerate(self, id):
         request = """
 <AdhocReportConfig format="raw-xml-v2" template-id="audit-report">
@@ -629,7 +641,6 @@ class NexposeSession_APIv1d1(NexposeSessionBase):
 </AdhocReportConfig>
 """
         return self.ExecuteBasicWithElement("ReportAdhocGenerateRequest", {}, as_xml(request.format(id)))
-        raise NotImplementedError()  # TODO
 
     #
     # The following functions implement the User Management API:
@@ -1466,7 +1477,7 @@ class NexposeSession(NexposeSession_APIv1d2):
             asset_group.description = json_dict.get['description']
             if asset_group.description is None:
                 asset_group.description = asset_group.short_description
-        except:
+        except Exception:
             pass
 
         return asset_group
@@ -1969,7 +1980,7 @@ class NexposeSession(NexposeSession_APIv1d2):
             report_or_configuration_or_id = report_or_configuration_or_id.configuration_id
         response = self.VerifySuccess(self.RequestReportConfig(report_or_configuration_or_id))
         element = get_element(response, 'ReportConfig')
-        return ReportConfigurationSummary.CreateFromXML(element)  # TODO: THIS MUST BE A FULL CONFIGURATION
+        return ReportConfiguration.CreateFromXML(element)  # TODO: THIS MUST BE A FULL CONFIGURATION
 
     def GetReportHistory(self, reportconfiguration_or_id):
         """
@@ -2047,6 +2058,36 @@ class NexposeSession(NexposeSession_APIv1d2):
         assert data[0] == data[-1][:-2]
         body = ''.join(data[4:-1])
         return as_xml(base64.urlsafe_b64decode(body))
+
+    def GenerateAdHocReport(self, adhoc_report_configuration):
+        """
+        Generate adhoc report and return decoded contents.
+        """
+        # TODO: add optional filename param to store the report to disk instead of memory
+        self._RequireInstanceOf(adhoc_report_configuration, AdhocReportConfiguration)
+        data = self.RequestAdhocReport(adhoc_report_configuration.AsXML())
+        data = self.VerifySuccess(data)
+        # TODO: figure out a way to handle this safely/correctly for different formats
+        data = data.tail.replace('\r', '').strip().split('\n')
+        # assert data[1] == 'Content-Type: text/xml; name=report.xml'
+        assert data[2] == 'Content-Transfer-Encoding: base64'
+        assert data[3] == ''
+        assert data[0] == data[-1][:-2]
+        body = ''.join(data[4:-1])
+        return base64.urlsafe_b64decode(body)
+
+    def SaveReportConfiguration(self, report_configuration, generate_now=False):
+        """
+        Save the configuration of a report and return the id of the saved report config.
+        If successful, the id will also have been updated in the provided ReportConfiguration object.
+        To create a new report, specify -1 as id.
+        """
+        self._RequireInstanceOf(report_configuration, ReportConfiguration)
+        response = self.RequestReportSave(report_configuration.AsXML(exclude_id=False), generate_now)
+        self.VerifySuccess(response)
+        report_cfg_id = int(get_attribute(response, 'reportcfg-id'))
+        report_configuration.id = report_cfg_id
+        return report_cfg_id
 
     #
     # The following functions implement the Role Management API:

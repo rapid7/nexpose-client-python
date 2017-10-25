@@ -677,6 +677,37 @@ def DemonstrateTicketAPI():
             print("      Comment:", repr(event.comment))
 
 
+def DemonstrateReportAPI():
+    print('Report API')
+    print('----------')
+
+    # TODO: show off more of the report API functionality than just a single config save/delete
+    report = nexpose.ReportConfiguration('Python API Client Test Report', 'audit-report', 'raw-xml-v2')
+    report.add_filter('scan', 'last')  # this should use site/group/tag filter(s) instead of scan in real world use
+    report.add_common_vuln_filters()  # adds vuln filters to match UI defaults
+
+    # these imports should be at the top, or perhaps be auto imports in the init file?
+    from nexpose.nexpose_report import Email, Delivery, Frequency, Schedule
+    email = Email(True, send_as='file')
+    email.smtp_relay_server = 'whatever.example.com'
+    email.sender = 'whatever@example.com'
+    email.recipients.append('someone@example.com')
+    delivery = Delivery(True, None, email)
+    report.delivery = delivery
+    schedule = Schedule('weekly', 1, "20171105T164239700")
+    freq = Frequency(False, True, schedule)
+    report.frequency = freq
+    report.timezone = 'America/Los_Angeles'
+
+    print('Saving report configuration...')
+    resp = session.SaveReportConfiguration(report)
+    print('Saved Report ID: {}'.format(resp))
+
+    print('Deleting report configuration with ID {}...'.format(resp))
+    session.DeleteReportConfiguration(resp)
+    print('Done with Report API demo.')
+
+
 def GetNexposeLoginSettings():
     """
     Returns a list with following information: hostname_or_ip, port, username, password.
@@ -720,13 +751,14 @@ def main():
     #DemonstrateVulnerabilityAPI()
     #DemonstrateVulnerabilityExceptionAPI()
     #DemonstrateRoleAPI()
-    DemonstrateSiteAPI()
+    #DemonstrateSiteAPI()
     #DemonstrateEngineAPI()
     #DemonstrateDiscoveryConnectionAPI()
     #DemonstrateScanPI()
     #DemonstrateUserAPI()
     #DemonstrateAssetGroupAPI()
     #DemonstrateTicketAPI()
+    #DemonstrateReportAPI()
 
     #print session.GenerateScanReport(1)
 

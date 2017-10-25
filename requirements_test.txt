@@ -3,4 +3,6 @@ future>=0.16.0
 lxml>=3.6.0
 py>=1.4.31
 pytest>=2.9.2
+pytest-vcr>=0.3.0
 unittest2>=1.1.0; python_version == '2.6'
+vcrpy>=1.11.1
