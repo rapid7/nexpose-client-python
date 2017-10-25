@@ -1,7 +1,10 @@
+from __future__ import (absolute_import, division, print_function, unicode_literals)
 import os
 import pytest
 import nexpose.nexpose as nexpose
 from nexpose.nexpose_report import Email, Delivery, Frequency, Schedule
+from future import standard_library
+standard_library.install_aliases()
 
 
 @pytest.fixture
