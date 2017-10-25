@@ -1,10 +1,11 @@
 from __future__ import (absolute_import, division, print_function, unicode_literals)
+from future import standard_library
+standard_library.install_aliases()
 import os
+import sys
 import pytest
 import nexpose.nexpose as nexpose
 from nexpose.nexpose_report import Email, Delivery, Frequency, Schedule
-from future import standard_library
-standard_library.install_aliases()
 
 
 @pytest.fixture
@@ -13,6 +14,7 @@ def vcr_cassette_path(request, vcr_cassette_name):
     return os.path.join('test_fixtures', 'cassettes', request.module.__name__, vcr_cassette_name)
 
 
+@pytest.mark.skipif(sys.version_info < (3, 4), reason="vcr not working on py2")
 @pytest.mark.vcr()
 def test_report_config():
     # login to Nexpose console
@@ -40,6 +42,7 @@ def test_report_config():
 
     # load the report configuration from the console into a new report config object
     loaded_report = nexpose.ReportConfiguration.CreateFromXML(session.RequestReportConfig(resp))
+    assert isinstance(loaded_report, nexpose.ReportConfiguration)
     assert loaded_report.name == report.name
 
     # finally, delete the report configuration
