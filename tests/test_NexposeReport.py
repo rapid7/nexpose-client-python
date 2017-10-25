@@ -14,7 +14,7 @@ def vcr_cassette_path(request, vcr_cassette_name):
 def test_report_config():
     # login to Nexpose console
     session = nexpose.NexposeSession.Create('localhost', 3780, 'nxadmin', 'nxadmin')
-    session.Open()
+    session._session_id = 'C949AAFB1DDF91B1865A4471F9E53A79D186B526'  # skip opening a session for real
 
     # create report config object
     report = nexpose.ReportConfiguration('Python API Client Test Report', 'audit-report', 'raw-xml-v2')

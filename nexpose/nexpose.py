@@ -284,7 +284,7 @@ class NexposeSessionBase(object):
         try:
             response = OpenWebRequest(self._URI_root, None, {}, self.timeout)
             return NexposeStatus.GetStatusFromURL(response.geturl())
-        except:
+        except Exception as ex:
             return NexposeStatus.UNKNOWN
 
 
@@ -1477,7 +1477,7 @@ class NexposeSession(NexposeSession_APIv1d2):
             asset_group.description = json_dict.get['description']
             if asset_group.description is None:
                 asset_group.description = asset_group.short_description
-        except:
+        except Exception as ex:
             pass
 
         return asset_group
@@ -2088,7 +2088,6 @@ class NexposeSession(NexposeSession_APIv1d2):
         report_cfg_id = int(get_attribute(response, 'reportcfg-id'))
         report_configuration.id = report_cfg_id
         return report_cfg_id
-
 
     #
     # The following functions implement the Role Management API:

@@ -1,33 +1,5 @@
 interactions:
 - request:
-    body: <LoginRequest user-id="nxadmin" password="nxadmin"/>
-    headers:
-      Connection: [close]
-      Content-Length: ['56']
-      Content-Type: [text/xml]
-      Host: ['localhost:3780']
-      User-Agent: [Python-urllib/3.6]
-    method: POST
-    uri: https://localhost:3780/api/1.1/xml
-  response:
-    body: {string: '<LoginResponse success="1" session-id="C949AAFB1DDF91B1865A4471F9E53A79D186B526"/>
-
-        '}
-    headers:
-      Cache-Control: ['no-store, must-revalidate']
-      Connection: [close]
-      Content-Length: ['83']
-      Content-Type: [application/xml;charset=UTF-8]
-      Date: ['Tue, 24 Oct 2017 23:13:44 GMT']
-      Server: [Security Console]
-      Set-Cookie: [nexposeCCSessionID=C949AAFB1DDF91B1865A4471F9E53A79D186B526; Path=/;
-          Secure; HttpOnly]
-      X-Content-Type-Options: [nosniff]
-      X-Frame-Options: [SAMEORIGIN]
-      X-UA-Compatible: ['IE=edge,chrome=1']
-      X-XSS-Protection: [1; mode=block]
-    status: {code: 200, message: OK}
-- request:
     body: <ReportSaveRequest generate-now="0" session-id="C949AAFB1DDF91B1865A4471F9E53A79D186B526"><ReportConfig
       id="-1" name="Python API Client Test Report" template-id="audit-report" format="raw-xml-v2"
       timezone="America/Los_Angeles"><Filters><filter type="scan" id="last"/><filter
