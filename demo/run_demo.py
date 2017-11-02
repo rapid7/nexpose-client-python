@@ -401,7 +401,7 @@ def DemonstrateSiteAPI():
             print("    Host:", asset.host)
             print("    Risk Factor:", asset.risk_factor)
             print("    Risk Score:", asset.risk_score)
-            session.DeleteAsset(asset)
+            # session.DeleteAsset(asset)
         print("  Scan Summaries:")
         for summary in session.GetSiteScanSummaries(site):
             assert isinstance(summary, nexpose.ScanSummary)
@@ -411,7 +411,7 @@ def DemonstrateSiteAPI():
             print("    Message:", summary.message)
 
     config = session.GetSiteConfiguration(1)
-    session.SaveSiteConfiguration(config)
+    #session.SaveSiteConfiguration(config)
 
 
 def DemonstrateEngineAPI():
@@ -710,6 +710,10 @@ def main():
     sslfix.patch()  # NOTE: this bypasses SSL verification, do not use this solution in production!
     InitializeGlobalSession()
     assert isinstance(session, nexpose.NexposeSession)
+
+    #
+    # WARNING: The demonstrations will alter you Nexpose data
+    #
 
     #DemonstrateBackupAPI()
     #DemonstrateCriteriaAPI()
