@@ -1403,7 +1403,7 @@ class NexposeSession(NexposeSession_APIv1d2):
         object_creator = lambda xml_data: AssetSummary.CreateFromXML(xml_data, site_id=xml_data.getparent().attrib['site-id'])
         return request_and_create_objects_from_xml(requestor, 'SiteDevices/device', object_creator)
 
-    def GetAssetDetails(self, asset_or_id):
+    def GetAssetDetails(self, asset_or_id, ignore_details_error=False):
         """
         Get detailed information of an asset.
         Requires the 2.1 API!
@@ -1412,7 +1412,7 @@ class NexposeSession(NexposeSession_APIv1d2):
             asset_or_id = asset_or_id.id
         sub_url = APIURL_ASSETS.format(asset_or_id)
         json_dict = self.ExecutePagedGet_v21(sub_url)
-        load_urls(json_dict, self.ExecutePagedGet_v21)
+        load_urls(json_dict, self.ExecutePagedGet_v21, ignore_error=ignore_details_error)
         return AssetDetails.CreateFromJSON(json_dict)
 
     def DeleteAsset(self, asset_or_id):

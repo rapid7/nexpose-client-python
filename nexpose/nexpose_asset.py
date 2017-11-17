@@ -22,7 +22,10 @@ class AssetBase(object):
 
     def InitializeFromJSON(self, json_dict):
         self.id = json_dict['id']
-        self.risk_score = json_dict['assessment']['json']['risk_score']
+        try:
+            self.risk_score = json_dict['assessment']['json']['risk_score']
+        except KeyError:
+            pass
 
     def __init__(self):
         self.id = 0
@@ -66,8 +69,14 @@ class AssetDetails(AssetBase):
             details.host_type = host_type
         details.os_name = json_dict["os_name"]
         details.os_cpe = json_dict["os_cpe"]
-        details.last_scan_id = json_dict['assessment']['json']['last_scan_id']
-        details.last_scan_date = json_dict['assessment']['json']['last_scan_date']
+        try:
+            assessment = json_dict['assessment']['json']
+        except KeyError:
+            pass
+        else:
+            details.last_scan_id = assessment['last_scan_id']
+            details.last_scan_date = assessment['last_scan_date']
+
         # TODO:
         # ----begin
         details.files = []

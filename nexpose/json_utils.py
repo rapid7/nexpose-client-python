@@ -28,7 +28,8 @@ def get_id(data, id_field_name):
     return data  # assume the data is the id
 
 
-def load_urls(json_dict, url_loader):
+def load_urls(json_dict, url_loader, ignore_error=False):
+    from urllib.error import HTTPError
     assert isinstance(json_dict, dict)
     for key in list(json_dict.keys()):
         if isinstance(json_dict[key], dict):
@@ -36,4 +37,8 @@ def load_urls(json_dict, url_loader):
                 raise ValueError('json_dict[' + key + '] already contains a json-element')
             url = json_dict[key].get('url', None)
             if url is not None:
-                json_dict[key]['json'] = url_loader(url)
+                try:
+                    json_dict[key]['json'] = url_loader(url)
+                except HTTPError:
+                    if not ignore_error:
+                        raise
