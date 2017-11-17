@@ -286,7 +286,7 @@ class NexposeSessionBase(object):
         try:
             response = OpenWebRequest(self._URI_root, None, {}, self.timeout)
             return NexposeStatus.GetStatusFromURL(response.geturl())
-        except:
+        except Exception as ex:  # noqa: F841
             return NexposeStatus.UNKNOWN
 
 
@@ -1477,7 +1477,7 @@ class NexposeSession(NexposeSession_APIv1d2):
             asset_group.description = json_dict.get['description']
             if asset_group.description is None:
                 asset_group.description = asset_group.short_description
-        except:
+        except Exception as ex:  # noqa: F841
             pass
 
         return asset_group
