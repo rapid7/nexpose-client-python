@@ -6,6 +6,8 @@ standard_library.install_aliases()
 import urllib.request
 import urllib.parse
 import urllib.error
+import csv
+import io
 import base64
 import json
 from .json_utils import load_urls
@@ -620,15 +622,20 @@ class NexposeSession_APIv1d1(NexposeSessionBase):
         else:
             return self.ExecuteBasicOnReport("ReportDeleteRequest", report_id)
 
-    def RequestReportAdhocGenerate(self, id):
+    def RequestReportAdhocGenerate(self, id, format='raw-xml-v2', template_id='audit-report'):
         request = """
-<AdhocReportConfig format="raw-xml-v2" template-id="audit-report">
+<AdhocReportConfig format="{format}" template-id="{template_id}">
 <Filters>
-<filter type="scan" id="{0}" />
+<filter type="scan" id="{scan_id}" />
 </Filters>
 </AdhocReportConfig>
 """
-        return self.ExecuteBasicWithElement("ReportAdhocGenerateRequest", {}, as_xml(request.format(id)))
+        request_data = request.format(
+            format=format,
+            template_id=template_id,
+            scan_id=id,
+        )
+        return self.ExecuteBasicWithElement("ReportAdhocGenerateRequest", {}, as_xml(request_data))
         raise NotImplementedError()  # TODO
 
     #
@@ -2036,21 +2043,44 @@ class NexposeSession(NexposeSession_APIv1d2):
         reader = self.GetReportStreamReader(report_or_id)
         return DownloadFromStreamReader(reader, callback_function, block_size)
 
-    def GenerateScanReport(self, scan_or_id):
+    def GenerateScanReport(self, scan_or_id, format='raw-xml-v2', template_id='audit-report'):
         """
         Generate a report of a scan.
         """
         if isinstance(scan_or_id, ScanSummary):
             scan_or_id = scan_or_id.id
-        data = self.RequestReportAdhocGenerate(scan_or_id)
+        data = self.RequestReportAdhocGenerate(scan_or_id, format, template_id)
         data = self.VerifySuccess(data)
         data = data.tail.replace('\r', '').strip().split('\n')
-        assert data[1] == 'Content-Type: text/xml; name=report.xml'
-        assert data[2] == 'Content-Transfer-Encoding: base64'
-        assert data[3] == ''
-        assert data[0] == data[-1][:-2]
+        boundary_top = data[0]
+        content_type = data[1]
+        encoding = data[2]
         body = ''.join(data[4:-1])
+        boundary_bottom = data[-1]
+        if boundary_top != boundary_bottom[:-2]:
+            raise ValueError("Invalid boundary")
+        if encoding != 'Content-Transfer-Encoding: base64':
+            raise ValueError("Unexpected encoding")
+        if format == 'raw-xml-v2':
+            return self._ParseScanReportXML(body, content_type)
+        elif format == 'csv':
+            return self._ParseScanReportCSV(body, content_type)
+        else:
+            return data
+
+    @staticmethod
+    def _ParseScanReportXML(body, content_type):
+        if content_type != 'Content-Type: text/xml; name=report.xml':
+            raise ValueError("Invalid content type")
         return as_xml(base64.urlsafe_b64decode(body))
+
+    @staticmethod
+    def _ParseScanReportCSV(body, content_type):
+        if content_type != 'Content-Type: text/csv; name=report.csv':
+            raise ValueError("Invalid content type")
+        csv_ = base64.urlsafe_b64decode(body).decode('utf8')
+        report_data = csv.DictReader(io.StringIO(csv_))
+        return report_data
 
     #
     # The following functions implement the Role Management API:
