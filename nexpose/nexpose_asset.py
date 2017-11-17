@@ -6,6 +6,8 @@ from .xml_utils import get_attribute
 from future import standard_library
 standard_library.install_aliases()
 
+from .nexpose_tag import Tag
+
 
 class AssetHostTypes(object):
     Empty = ''
@@ -77,11 +79,30 @@ class AssetDetails(AssetBase):
             details.last_scan_id = assessment['last_scan_id']
             details.last_scan_date = assessment['last_scan_date']
 
+        try:
+            tags = json_dict['tags']['json']['resources']
+        except KeyError:
+            pass
+        else:
+            for tag in tags:
+                details.tags.append(Tag.CreateFromJSON(tag))
+
+        details.unique_identifiers = []
+        try:
+            unique_identifiers_data = json_dict['unique_identifiers']['json']
+        except KeyError:
+            # Unique Identifiers not fetched
+            pass
+        else:
+            for identifier in unique_identifiers_data:
+                details.unique_identifiers.append(
+                    UniqueIdentifier.CreateFromJSON(identifier)
+                )
+
         # TODO:
         # ----begin
         details.files = []
         details.vulnerability_instances = []
-        details.unique_identifiers = []
         details.group_accounts = []
         details.user_accounts = []
         details.vulnerabilities = []
@@ -110,3 +131,24 @@ class AssetDetails(AssetBase):
         self.vulnerabilities = []
         self.software = []
         self.services = []
+        self.tags = []
+
+
+class UniqueIdentifier(object):
+
+    def __init__(self):
+        self.source = ''
+        self.id = ''
+
+    @staticmethod
+    def CreateFromJSON(json_dict):
+        unique_identifier = UniqueIdentifier()
+        unique_identifier.source = json_dict['source']
+        unique_identifier.id = json_dict['id']
+        return unique_identifier
+
+    def __repr__(self):
+        return '<UniqueIdentifier {type}: {id}>'.format(
+            type=self.source,
+            id=self.id,
+        )

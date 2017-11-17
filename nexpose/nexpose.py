@@ -1412,6 +1412,10 @@ class NexposeSession(NexposeSession_APIv1d2):
             asset_or_id = asset_or_id.id
         sub_url = APIURL_ASSETS.format(asset_or_id)
         json_dict = self.ExecutePagedGet_v21(sub_url)
+        if 'tags' not in json_dict:
+            json_dict['tags'] = {
+                'url': json_dict['url'] + '/tags'
+            }
         load_urls(json_dict, self.ExecutePagedGet_v21, ignore_error=ignore_details_error)
         return AssetDetails.CreateFromJSON(json_dict)
 
