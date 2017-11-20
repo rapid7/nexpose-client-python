@@ -1,5 +1,13 @@
 # Change Log
 
+## [0.1.7](https://github.com/rapid7/nexpose-client-python/tree/0.1.7) (2017-11-20)
+[Full Changelog](https://github.com/rapid7/nexpose-client-python/compare/0.1.6...0.1.7)
+
+**Merged pull requests:**
+
+- Improvements for AssetDetails, Tags & Unique Identifiers + Adhoc Reports [\#43](https://github.com/rapid7/nexpose-client-python/pull/43) ([fruechel](https://github.com/fruechel))
+- Made the demo more safe [\#42](https://github.com/rapid7/nexpose-client-python/pull/42) ([NVolcz](https://github.com/NVolcz))
+
 ## [0.1.6](https://github.com/rapid7/nexpose-client-python/tree/0.1.6) (2017-10-17)
 [Full Changelog](https://github.com/rapid7/nexpose-client-python/compare/0.1.5...0.1.6)
 
