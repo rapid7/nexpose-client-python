@@ -724,7 +724,7 @@ def main():
     #DemonstrateVulnerabilityAPI()
     #DemonstrateVulnerabilityExceptionAPI()
     #DemonstrateRoleAPI()
-    DemonstrateSiteAPI()
+    #DemonstrateSiteAPI()
     #DemonstrateEngineAPI()
     #DemonstrateDiscoveryConnectionAPI()
     #DemonstrateScanPI()
