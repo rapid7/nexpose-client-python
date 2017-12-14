@@ -24,6 +24,7 @@ from .nexpose_credential import Credential_DB2, Credential_MySQL, Credential_Ora
 from .nexpose_credential import Credential_FTP, Credential_HTTP, Credential_SNMP, Credential_SNMPV3, Credential_SSH, Credential_SSH_KEY, Credential_Telnet
 from .nexpose_discoveryconnection import DiscoveryConnectionProtocol, DiscoveryConnectionSummary, DiscoveryConnectionConfiguration
 from .nexpose_engine import EngineStatus, EnginePriority, EngineBase, EngineSummary, EngineConfiguration
+from .nexpose_eso import Configuration as EsoConfiguration
 from .nexpose_node import NodeScanStatus, NodeBase, Node
 from .nexpose_privileges import AssetGroupPrivileges, GlobalPrivileges, SitePrivileges
 from .nexpose_report import ReportStatus, ReportTemplate, ReportConfigurationSummary, ReportConfiguration, ReportSummary
@@ -142,6 +143,12 @@ def ExecuteDelete_JSON(session_id, uri, sub_url, timeout):
     return False
 
 
+def ExecuteDelete_JSON_ESO(session_id, uri, sub_url, timeout):
+    headers = CreateHeadersWithSessionCookieAndCustomHeader(session_id)
+    uri = uri + sub_url
+    return ExecuteWebRequest(uri, None, headers, timeout, lambda: 'DELETE')
+
+
 def ExecutePagedGet_JSON(session_id, uri, sub_url, timeout, per_page=2147483647):
     options = {}
     options["per_page"] = per_page  # NOTA: API 2.0 defaults this to 500 if not set
@@ -233,6 +240,8 @@ APIURL_SITES = "sites/{0}/"
 APIURL_ASSETS = "assets/{0}/"
 APIURL_ASSETGROUPS = "asset_groups/{0}/"
 
+ESOURL_CONFIGMANAGER = "/configuration-manager/api/service/"
+
 
 class NexposeException(Exception):
     def __init__(self, message):
@@ -271,6 +280,7 @@ class NexposeSessionBase(object):
         self._URI_root = BuildURI_root(host, port)
         self._URI_APIv2d0 = BuildURI_APIv2d0(host, port)
         self._URI_APIv2d1 = BuildURI_APIv2d1(host, port)
+        self._URI_APIESO = BuildRootURI(host, port) + 'eso'
         self.timeout = 60
 
     #
@@ -1200,9 +1210,19 @@ class NexposeSession(NexposeSession_APIv1d2):
     def ExecutePagedGet_v21(self, sub_url):
         return self.ExecutePagedGet_vXX(sub_url, self._URI_APIv2d1)
 
+    def ExecutePagedGet_ESO(self, sub_url):
+        self._RequireAnOpenSession()
+        result = ExecuteGet_JSON(self._session_id, self._URI_APIESO, sub_url, self.timeout)
+        return json.loads(result)
+
     def ExecutePost(self, sub_url, post_data):
         self._RequireAnOpenSession()
         return ExecutePost_JSON(self._session_id, self._URI_APIv2d0, sub_url, self.timeout, post_data)
+
+    def ExecutePost_ESO(self, sub_url, post_data):
+        self._RequireAnOpenSession()
+        response = ExecutePost_JSON(self._session_id, self._URI_APIESO, sub_url, self.timeout, post_data)
+        return json.loads(response)
 
     def ExecutePut(self, sub_url, post_data):
         self._RequireAnOpenSession()
@@ -1211,6 +1231,10 @@ class NexposeSession(NexposeSession_APIv1d2):
     def ExecuteDelete(self, sub_url):
         self._RequireAnOpenSession()
         return ExecuteDelete_JSON(self._session_id, self._URI_APIv2d0, sub_url, self.timeout)
+
+    def ExecuteDelete_ESO(self, sub_url):
+        self._RequireAnOpenSession()
+        return ExecuteDelete_JSON_ESO(self._session_id, self._URI_APIESO, sub_url, self.timeout)
 
     def ExecuteFormPost(self, sub_url, post_data):
         self._RequireAnOpenSession()
@@ -2613,3 +2637,71 @@ class NexposeSession(NexposeSession_APIv1d2):
             backup_or_filename = backup_or_filename.name
         parameters = {'backupid': backup_or_filename}
         return self.ExecuteMaintenanceCommand('backupRestore', 'deleteBackup', parameters)
+
+    #
+    # The following functions implement the ESO Configuration API
+    # They are used for new-style Discovery connections
+    # =========================================================================
+
+    def GetEsoServices(self):
+        sub_url = ESOURL_CONFIGMANAGER
+        json_dict = self.ExecutePagedGet_ESO(sub_url)
+        return json_dict
+
+    def GetEsoConfigurationType(self, service_name):
+        sub_url = ESOURL_CONFIGMANAGER + 'configurationType/{}'.format(service_name)
+        json_dict = self.ExecutePagedGet_ESO(sub_url)
+        return json_dict
+
+    def GetEsoServiceConfigurations(self, service_name):
+        sub_url = ESOURL_CONFIGMANAGER + 'configuration/{}/'.format(service_name)
+        json_list = self.ExecutePagedGet_ESO(sub_url)
+        services = [EsoConfiguration.CreateFromJSON(i) for i in json_list]
+        return services
+
+    def GetEsoServiceConfigurationByName(self, service_name, config_name):
+        for config in self.GetEsoServiceConfigurations(service_name):
+            if config.name == config_name:
+                return config
+        else:
+            raise KeyError("Config {} not found".format(config_name))
+
+    def GetEsoServiceConfiguration(self, config_or_id):
+        if isinstance(config_or_id, EsoConfiguration):
+            config_or_id = config_or_id.id
+        sub_url = ESOURL_CONFIGMANAGER + 'configuration/id/{}'.format(config_or_id)
+        json_dict = self.ExecutePagedGet_ESO(sub_url)
+        return EsoConfiguration.CreateFromJSON(json_dict)
+
+    def SaveEsoServiceConfiguration(self, config):
+        self._RequireInstanceOf(config, EsoConfiguration)
+        sub_url = ESOURL_CONFIGMANAGER + 'configuration'
+        payload = config.as_json()
+        response = self.ExecutePost_ESO(sub_url, payload)
+        config_id = int(response['data'])
+        if config_id < 1:
+            raise RuntimeError("API returned invalid configID ({}) while attempting to create configuration.".format(config_id))
+        config.id = config_id
+        return config_id
+
+    def DeleteEsoServiceConfiguration(self, config_or_id):
+        if isinstance(config_or_id, EsoConfiguration):
+            config_or_id = config_or_id.id
+        sub_url = ESOURL_CONFIGMANAGER + 'configuration/{}'.format(config_or_id)
+        result = self.ExecuteDelete_ESO(sub_url)
+        if result != 'success':
+            raise RuntimeError("Failed to delete configuration with ID: {}".format(config_or_id))
+
+    def PreviewEsoServiceConfiguration(self, config):
+        self._RequireInstanceOf(config, EsoConfiguration)
+        sub_url = ESOURL_CONFIGMANAGER + 'configuration/preview'
+        payload = config.as_json()
+        response_body = self.ExecutePost_ESO(sub_url, payload)
+        return response_body['previewAssets']
+
+    def TestEsoServiceConfiguration(self, config):
+        self._RequireInstanceOf(config, EsoConfiguration)
+        sub_url = ESOURL_CONFIGMANAGER + 'configuration/test'
+        payload = config.as_json()
+        response_body = self.ExecutePost_ESO(sub_url, payload)
+        return response_body['data']
