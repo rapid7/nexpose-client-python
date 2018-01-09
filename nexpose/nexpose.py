@@ -25,6 +25,7 @@ from .nexpose_credential import Credential_FTP, Credential_HTTP, Credential_SNMP
 from .nexpose_discoveryconnection import DiscoveryConnectionProtocol, DiscoveryConnectionSummary, DiscoveryConnectionConfiguration
 from .nexpose_engine import EngineStatus, EnginePriority, EngineBase, EngineSummary, EngineConfiguration
 from .nexpose_eso import Configuration as EsoConfiguration
+from .nexpose_integration_options import IntegrationOption
 from .nexpose_node import NodeScanStatus, NodeBase, Node
 from .nexpose_privileges import AssetGroupPrivileges, GlobalPrivileges, SitePrivileges
 from .nexpose_report import ReportStatus, ReportTemplate, ReportConfigurationSummary, ReportConfiguration, ReportSummary
@@ -79,6 +80,7 @@ def CreateHeadersWithSessionCookie(session_id):
 def CreateHeadersWithSessionCookieAndCustomHeader(session_id):
     headers = CreateHeadersWithSessionCookie(session_id)
     headers["nexposeCCSessionID"] = "{0}".format(session_id)
+    headers['X-Requested-With'] = 'XMLHttpRequest'
     return headers
 
 
@@ -87,7 +89,7 @@ def ExecuteGet_JSON(session_id, uri, sub_url, timeout, options=None):
     if options is None:
         options = {}
     options = ["{0}={1}".format(a[0], a[1]) for a in iter(options.items())]
-    headers = CreateHeadersWithSessionCookie(session_id)
+    headers = CreateHeadersWithSessionCookieAndCustomHeader(session_id)
     # headers["Accept-Encoding"] = "utf-8"
     if sub_url.startswith('http'):  # TODO: refactor uri & sub_url so that json_utils.resolve_urls can work better
         uri = sub_url
@@ -241,6 +243,7 @@ APIURL_ASSETS = "assets/{0}/"
 APIURL_ASSETGROUPS = "asset_groups/{0}/"
 
 ESOURL_CONFIGMANAGER = "/configuration-manager/api/service/"
+ESOURL_INTEG_OPTIONS = "/integration-manager-service/api/integration-options/"
 
 
 class NexposeException(Exception):
@@ -2673,7 +2676,7 @@ class NexposeSession(NexposeSession_APIv1d2):
         json_dict = self.ExecutePagedGet_ESO(sub_url)
         return EsoConfiguration.CreateFromJSON(json_dict)
 
-    def SaveEsoServiceConfiguration(self, config):
+    def SaveEsoServiceConfiguration(self, config, save_integration_options=False):
         self._RequireInstanceOf(config, EsoConfiguration)
         sub_url = ESOURL_CONFIGMANAGER + 'configuration'
         payload = config.as_json()
@@ -2682,11 +2685,20 @@ class NexposeSession(NexposeSession_APIv1d2):
         if config_id < 1:
             raise RuntimeError("API returned invalid configID ({}) while attempting to create configuration.".format(config_id))
         config.id = config_id
+        if save_integration_options:
+            for opt in config.integration_options:
+                self.SaveIntegrationOption(opt)
+                self.StartIntegrationOption(opt)
         return config_id
 
-    def DeleteEsoServiceConfiguration(self, config_or_id):
+    def DeleteEsoServiceConfiguration(self, config_or_id, delete_integration_options=False):
         if isinstance(config_or_id, EsoConfiguration):
+            if delete_integration_options:
+                for opt in config_or_id.integration_options:
+                    self.DeleteIntegrationOption(opt)
             config_or_id = config_or_id.id
+        elif delete_integration_options:
+            raise TypeError("Need config option if deleting integration options")
         sub_url = ESOURL_CONFIGMANAGER + 'configuration/{}'.format(config_or_id)
         result = self.ExecuteDelete_ESO(sub_url)
         if result != 'success':
@@ -2705,3 +2717,53 @@ class NexposeSession(NexposeSession_APIv1d2):
         payload = config.as_json()
         response_body = self.ExecutePost_ESO(sub_url, payload)
         return response_body['data']
+
+    #
+    # Implement the integrations manager API
+    # =========================================================================
+    
+    def GetIntegrationOptions(self):
+        sub_url = ESOURL_INTEG_OPTIONS + 'options-and-states'
+        json_list = self.ExecutePagedGet_ESO(sub_url)
+        integration_options = [
+            IntegrationOption.CreateFromJSON(i['integrationOption'])
+            for i in json_list]
+        return integration_options
+
+    def SaveIntegrationOption(self, option):
+        self._RequireInstanceOf(option, IntegrationOption)
+        sub_url = ESOURL_INTEG_OPTIONS
+        payload = option.as_json()
+        response = self.ExecutePost_ESO(sub_url, payload)
+        option.update(response['data'])
+        return option.id
+
+    def DeleteIntegrationOption(self, option_or_id):
+        if isinstance(option_or_id, IntegrationOption):
+            option_or_id = option_or_id.id
+        sub_url = ESOURL_INTEG_OPTIONS + '{}/state'.format(option_or_id)
+        result = json.loads(self.ExecuteDelete_ESO(sub_url))
+        msg = result['data']
+        if 'being stopped' not in msg:
+            raise RuntimeError("Failed to delete step with ID: {}: {}".format(option_or_id, msg))
+
+    def GetIntegrationOption(self, option_id):
+        for option in self.GetIntegrationOptions():
+            if option.id == option_id:
+                return option
+        else:
+            raise KeyError("Option {} not found".format(option_or_id))
+
+    def GetIntegrationOptionStatus(self, option_or_id):
+        if isinstance(option_or_id, IntegrationOption):
+            option_or_id = option_or_id.id
+        sub_url = ESOURL_INTEG_OPTIONS + '{}/status'.format(option_or_id)
+        result = self.ExecutePagedGet_ESO(sub_url)
+        return result['data']
+
+    def StartIntegrationOption(self, option_or_id):
+        if isinstance(option_or_id, IntegrationOption):
+            option_or_id = option_or_id.id
+        sub_url = ESOURL_INTEG_OPTIONS + '{}/state'.format(option_or_id)
+        result = self.ExecutePost_ESO(sub_url, {})
+        return result['data']
