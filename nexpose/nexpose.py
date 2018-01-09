@@ -61,11 +61,13 @@ def ExecuteWebRequest(uri, post_data, headers, timeout, get_method=None):
     return response.read().decode('utf-8')
 
 
-def Execute_APIv1d1(uri, xml_input, timeout):
+def Execute_APIv1d1(uri, xml_input, timeout, xml_response=True):
     post_data = as_string(xml_input)
     headers = {"Content-type": "text/xml"}  # TODO: add charset=UTF-8'
     response = ExecuteWebRequest(uri, post_data, headers, timeout)
-    return as_xml(response)
+    if xml_response:
+        response = as_xml(response)
+    return response
 
 
 def Execute_APIv1d2(uri, xml_input, timeout):
@@ -314,9 +316,10 @@ class NexposeSession_APIv1d1(NexposeSessionBase):
     # The following functions are internal:
     # ====================================
 
-    def _Execute_APIv1d1(self, request):
+    def _Execute_APIv1d1(self, request, **kwargs):
+        return Execute_APIv1d1(self._URI_APIv1d1, request, self.timeout, **kwargs)
         try:
-            return Execute_APIv1d1(self._URI_APIv1d1, request, self.timeout)
+            return Execute_APIv1d1(self._URI_APIv1d1, request, self.timeout, **kwargs)
         except Exception as ex:
             raise NexposeConnectionException("Unable to execute the request: {0}!".format(ex), ex)
 
@@ -333,7 +336,7 @@ class NexposeSession_APIv1d1(NexposeSessionBase):
         request = BuildRequest(self._session_id, tag_name, initial_attributes)
         return self._Execute_APIv1d1(request)
 
-    def ExecuteBasicWithElement(self, tag, extra_attributes, element_or_name, element_attributes=None):
+    def ExecuteBasicWithElement(self, tag, extra_attributes, element_or_name, element_attributes=None, **kwargs):
         self._RequireAnOpenSession()
         request = BuildRequest(self._session_id, tag, extra_attributes)
         if element_or_name is None:
@@ -344,7 +347,7 @@ class NexposeSession_APIv1d1(NexposeSessionBase):
             elif element_attributes is not None:
                 raise ValueError('element_attributes should be None')
             request.append(element_or_name)
-        return self._Execute_APIv1d1(request)
+        return self._Execute_APIv1d1(request, **kwargs)
 
     def ExecuteBasicOnSite(self, tag, site_id):
         extra = {'site-id': site_id}
@@ -648,7 +651,7 @@ class NexposeSession_APIv1d1(NexposeSessionBase):
             template_id=template_id,
             scan_id=id,
         )
-        return self.ExecuteBasicWithElement("ReportAdhocGenerateRequest", {}, as_xml(request_data))
+        return self.ExecuteBasicWithElement("ReportAdhocGenerateRequest", {}, as_xml(request_data), xml_response=False)
         raise NotImplementedError()  # TODO
 
     #
@@ -2077,21 +2080,29 @@ class NexposeSession(NexposeSession_APIv1d2):
         if isinstance(scan_or_id, ScanSummary):
             scan_or_id = scan_or_id.id
         data = self.RequestReportAdhocGenerate(scan_or_id, format, template_id)
-        data = self.VerifySuccess(data)
-        data = data.tail.replace('\r', '').strip().split('\n')
-        boundary_top = data[0]
-        content_type = data[1]
-        encoding = data[2]
-        body = ''.join(data[4:-1])
-        boundary_bottom = data[-1]
-        if boundary_top != boundary_bottom[:-2]:
+        data = data.replace('\r', '').strip().split('\n')
+        # Split into the XML response & report data
+        boundary1, xml, boundary2, report, boundary3 = data[0], data[1:4], data[4], data[5:-1], data[-1]
+        if boundary1 != boundary2 != boundary3[:-2]:
             raise ValueError("Invalid boundary")
-        if encoding != 'Content-Transfer-Encoding: base64':
+
+        # Verify success in XML
+        xml_content_type = xml[0]
+        if not xml_content_type.startswith('Content-Type: application/xml'):
+            raise ValueError("Invalid Content-Type for XML part")
+        xml_response = as_xml(xml[2])
+        self.VerifySuccess(xml_response)
+
+        # Extract report data
+        report_content_type = report[0]
+        report_encoding = report[1]
+        body = ''.join(report[3:])
+        if report_encoding != 'Content-Transfer-Encoding: base64':
             raise ValueError("Unexpected encoding")
         if format == 'raw-xml-v2':
-            return self._ParseScanReportXML(body, content_type)
+            return self._ParseScanReportXML(body, report_content_type)
         elif format == 'csv':
-            return self._ParseScanReportCSV(body, content_type)
+            return self._ParseScanReportCSV(body, report_content_type)
         else:
             return data
 

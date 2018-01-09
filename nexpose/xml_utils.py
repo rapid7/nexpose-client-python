@@ -51,8 +51,6 @@ def from_large_string(s):
     return etree.XML(s.encode('utf-8'))
 
 
-# TODO: when downloading reports we shouldn't use XML, the from_large_string should only be needed in rare cases
-#       this is actually a problem of GenerateScanReport as it shouldn't be using Execute_APIv1d1
 def as_xml(s):
     # Note:
     # There is a bug in the StartUpdateResponse, in case of a failure (no internet connection),
