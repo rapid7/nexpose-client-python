@@ -11,6 +11,8 @@ This library provides calls to the Nexpose XML APIs version 1.1 and 1.2.
 
 nexpose-client-python uses [Semantic Versioning](http://semver.org/). This allows for confident use of [version pinning](https://www.python.org/dev/peps/pep-0440/#version-specifiers) in your requirements file.
 
+Install the library using pip: `pip install nexpose`
+
 ## Release Notes
 
 Release notes are available on the [Releases](https://github.com/rapid7/nexpose-client-python/releases) page.
