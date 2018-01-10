@@ -45,6 +45,7 @@ class StepConfiguration(object):
             set_defaults=False,
             integration_option_id=integration_option_id)
         step_config.configuration_params['properties'] = props
+        return step_config
 
     def __init__(
             self, type_name, previous_type_name="",
