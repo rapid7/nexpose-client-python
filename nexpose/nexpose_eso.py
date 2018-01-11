@@ -244,12 +244,15 @@ class AWSConfiguration(Configuration):
         self.add_property('useProxy', bool(value))
 
     @property
-    def arn(self):
+    def arns(self):
         return self.get_property('arn')
 
-    @arn.setter
-    def arn(self, value):
-        self.add_property('arn', str(value))
+    @arns.setter
+    def arns(self, arns):
+        self.add_property('arn', list(arns))
+
+    def add_arn(self, arn):
+        self.add_property_item('arn', arn)
 
 
     #
