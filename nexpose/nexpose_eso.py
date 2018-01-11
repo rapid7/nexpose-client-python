@@ -163,30 +163,6 @@ class AWSConfiguration(Configuration):
     def __init__(self, name, properties=None, integration_options=None, id=None):
         if properties is None:
             properties = {}
-            """
-            properties = {
-                'arn': {
-                    'value': '',
-                     'valueClass': 'String',
-                },
-                 'consoleInsideAWS': {
-                    'value': False, 'valueClass': 'Boolean',
-                },
-                 'engineInsideAWS': {
-                    'value': False, 'valueClass': 'Boolean',
-                },
-                 'region': {
-                    'items': [],
-                    'valueClass': 'Array',
-                },
-                 'sessionName': {
-                    'value': '', 'valueClass': 'String',
-                },
-                 'useProxy': {
-                    'value': False, 'valueClass': 'Boolean',
-                },
-            }
-            """
         if integration_options is None:
             integration_options = []
         self._id = None
