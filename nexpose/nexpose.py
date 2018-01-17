@@ -1175,10 +1175,10 @@ class NexposeSession(NexposeSession_APIv1d2):
 
     @staticmethod
     def Create(host, port, username, password, silo_id=None):
-        return NexposeSession(host, port, username, password, silo_id=None)
+        return NexposeSession(host, port, username, password, silo_id)
 
     def __init__(self, host, port, username, password, silo_id=None):
-        NexposeSession_APIv1d2.__init__(self, host, port, username, password, silo_id=None)
+        NexposeSession_APIv1d2.__init__(self, host, port, username, password, silo_id)
         self.session_username = username
 
     #
