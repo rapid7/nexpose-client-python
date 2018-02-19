@@ -170,7 +170,7 @@ class SiteConfiguration(SiteBase):
         attributes['configVersion'] = self.configversion
 
         xml_scanconfig = create_element('ScanConfig', attributes)
-        xml_scheduling = create_element('Scheduling')
+        xml_scheduling = create_element('Schedules')
         for schedule in self.schedules:
             xml_scheduling.append(schedule)
         xml_scanconfig.append(xml_scheduling)
