@@ -1,5 +1,10 @@
+# DEPRECATED
+The [RESTful API for the Nexpose/InsightVM Security Console](https://help.rapid7.com/insightvm/en-us/api/index.html) has rendered this library obsolete. If you require a Python library for that API you can use a [generated client](https://github.com/rapid7/vm-console-client-python). Clients for other languages can be generated from the Swagger specification. Note that generated clients are not officially supported or maintained by Rapid7.
+
+This project will not receive new changes from Rapid7, though pull requests may still be accepted and new releases published on request.
+
 # nexpose-client-python
-[![Travis](https://img.shields.io/travis/rapid7/nexpose-client-python.svg)](https://travis-ci.org/rapid7/nexpose-client-python) [![PyPI Version](https://img.shields.io/pypi/v/nexpose.svg)](https://pypi.python.org/pypi/nexpose) ![PyPI Status](https://img.shields.io/pypi/status/nexpose.svg) [![GitHub license](https://img.shields.io/badge/license-BSD-blue.svg)](https://raw.githubusercontent.com/rapid7/nexpose-client-python/master/LICENSE) ![PyPI Pythons](https://img.shields.io/pypi/pyversions/nexpose.svg)
+[![No Maintenance Intended](http://unmaintained.tech/badge.svg)](http://unmaintained.tech/) [![Travis](https://img.shields.io/travis/rapid7/nexpose-client-python.svg)](https://travis-ci.org/rapid7/nexpose-client-python) [![PyPI Version](https://img.shields.io/pypi/v/nexpose.svg)](https://pypi.python.org/pypi/nexpose) ![PyPI Status](https://img.shields.io/pypi/status/nexpose.svg) [![GitHub license](https://img.shields.io/badge/license-BSD-blue.svg)](https://raw.githubusercontent.com/rapid7/nexpose-client-python/master/LICENSE) ![PyPI Pythons](https://img.shields.io/pypi/pyversions/nexpose.svg)
 
 This is the official Python package for the Python Nexpose API client library.
 
