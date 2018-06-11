@@ -193,8 +193,10 @@ def request_and_create_objects_from_xml(requestor, xpath, object_creator):
     return create_objects_from_xml(requestor().iterfind(xpath), object_creator.__call__)
 
 
-def BuildLoginRequest(username, password):
+def BuildLoginRequest(username, password, silo_id=None):
     attributes = {'user-id': username, 'password': password}
+    if silo_id:
+        attributes['silo-id'] = silo_id
     login_request = create_element("LoginRequest", attributes)
     return login_request
 
@@ -293,10 +295,10 @@ class NexposeSessionBase(object):
 
 
 class NexposeSession_APIv1d1(NexposeSessionBase):
-    def __init__(self, host, port, username, password):
+    def __init__(self, host, port, username, password, silo_id=None):
         NexposeSessionBase.__init__(self, host, port)
         self._URI_APIv1d1 = BuildURI_APIv1d1(host, port)
-        self._login_request = BuildLoginRequest(username, password)
+        self._login_request = BuildLoginRequest(username, password, silo_id)
         self._session_id = None
 
     #
@@ -729,8 +731,8 @@ class NexposeSession_APIv1d1(NexposeSessionBase):
 
 
 class NexposeSession_APIv1d2(NexposeSession_APIv1d1):
-    def __init__(self, host, port, username, password):
-        NexposeSession_APIv1d1.__init__(self, host, port, username, password)
+    def __init__(self, host, port, username, password, silo_id=None):
+        NexposeSession_APIv1d1.__init__(self, host, port, username, password, silo_id)
         self._URI_APIv1d2 = BuildURI_APIv1d2(host, port)
 
     #
@@ -1166,17 +1168,17 @@ class NexposeSession_APIv1d2(NexposeSession_APIv1d1):
 
 class NexposeSession(NexposeSession_APIv1d2):
     @staticmethod
-    def CreateAndOpen(host, port, username, password):
-        session = NexposeSession.Create(host, port, username, password)
+    def CreateAndOpen(host, port, username, password, silo_id=None):
+        session = NexposeSession.Create(host, port, username, password, silo_id)
         session.Open()
         return session
 
     @staticmethod
-    def Create(host, port, username, password):
-        return NexposeSession(host, port, username, password)
+    def Create(host, port, username, password, silo_id=None):
+        return NexposeSession(host, port, username, password, silo_id)
 
-    def __init__(self, host, port, username, password):
-        NexposeSession_APIv1d2.__init__(self, host, port, username, password)
+    def __init__(self, host, port, username, password, silo_id=None):
+        NexposeSession_APIv1d2.__init__(self, host, port, username, password, silo_id)
         self.session_username = username
 
     #
